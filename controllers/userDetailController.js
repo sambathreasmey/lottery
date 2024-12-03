@@ -13,8 +13,17 @@ const getUserDetail = asyncHandler(async (req, res) => {
 //@route GET /api/user_detail
 //@access private
 const getUserDetailById = asyncHandler(async (req, res) => {
-    const userDetail = await UserDetail.find({ _id: req.params.id });
-    res.status(200).json(userDetail);
+    try {
+        const userDetail = await UserDetail.findOne({ _id: req.params.id });
+        if (!userDetail) {
+            res.status(404);
+            throw new Error("this id is not found");
+        }
+        res.status(200).json(userDetail);
+    } catch (error) {
+        res.status(404);
+        throw new Error("this id is not found");
+    }
 });
 
 //@desc create user details
@@ -24,8 +33,25 @@ const createUserDetail = asyncHandler(async (req, res) => {
     const { username, phone_number, password, email_address, address } = req.body;
     if (!username || !phone_number || !password || !email_address || !address) {
         res.status(400);
-        throw new Error("All fields are mandatory !");
+        throw new Error("all fields are mandatory");
     }
+
+    try {
+        const userAvailable = await UserDetail.findOne({ email_address: email_address });
+        if (userAvailable) {
+            res.status(400);
+            throw new Error("user already registered");
+        }
+        const usernameAvailable = await UserDetail.findOne({ username: username });
+        if (usernameAvailable) {
+            res.status(400);
+            throw new Error("username is available");
+        }
+    } catch (error) {
+        res.status(404);
+        throw new Error("this id is not found");
+    }
+
     const userDetail = await UserDetail.create(
         {
             username: username,
@@ -43,41 +69,60 @@ const createUserDetail = asyncHandler(async (req, res) => {
 //@route PUT /api/user_detail
 //@access private
 const updateUserDetail = asyncHandler(async (req, res) => {
-    const userDetail = await UserDetail.findById({ _id: req.params.id });
-    if (!userDetail) {
+    try {
+        const userDetail = await UserDetail.findById({ _id: req.params.id });
+        if (!userDetail) {
+            res.status(404);
+            throw new Error("this id not found");
+        }
+        if (userDetail.user_id.toString() !== req.user.id) {
+            res.status(403);
+            throw new Error("user don't have permission to update other data");
+        }
+    } catch (error) {
         res.status(404);
-        throw new Error("User not found");
+        throw new Error("this id is not found");
     }
 
-    if (userDetail.user_id.toString() !== req.user.id) {
-        res.status(403);
-        throw new Error("User API don't have permission to update other user Users");
+    try {
+        const updateContact = await UserDetail.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        console.log(updateContact);
+        res.status(200).json({ code: 200, message: "success" });
+    } catch (error) {
+        res.status(500).json({ code: 500, message: "internal server error" });
     }
-
-    const updateContact = await UserDetail.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
-    );
-    res.status(200).json(updateContact);
 });
 
 //@desc Delete user details
 //@route DELETE /api/user_detail/:id
 //@access private
 const deleteUserDetail = asyncHandler(async (req, res) => {
-    const userDetail = await UserDetail.findById({ _id: req.params.id });
-    if (!userDetail) {
+    try {
+        const userDetail = await UserDetail.findById({ _id: req.params.id });
+        if (!userDetail) {
+            res.status(404);
+            throw new Error("this id not found");
+        }
+        if (userDetail.user_id.toString() !== req.user.id) {
+            res.status(403);
+            throw new Error("user don't have permission to update other data");
+        }
+    } catch (error) {
         res.status(404);
-        throw new Error("User not found");
+        throw new Error("this id is not found");
     }
 
-    if (userDetail.user_id.toString() !== req.user.id) {
-        res.status(403);
-        throw new Error("User API don't have permission to update other user Users");
+    try {
+        const resDel = await UserDetail.deleteOne({ _id: req.params.id });
+        console.log(resDel);
+        res.status(200).json({ code: 200, message: "success" });
+    } catch (error) {
+        res.status(500).json({ code: 500, message: "internal server error" });
     }
-    await UserDetail.deleteOne({ _id: req.params.id });
-    res.status(200).json({ message: "success" });
 });
 
 //@desc login user details
