@@ -55,7 +55,7 @@ const createGroupMember = asyncHandler(async (req, res) => {
 });
 
 //@desc Delete group member
-//@route DELETE /api/member/:id
+//@route DELETE /api/group_member/:id
 //@access private
 const deleteGroupMember = asyncHandler(async (req, res) => {
 
@@ -84,5 +84,37 @@ const deleteGroupMember = asyncHandler(async (req, res) => {
 
 });
 
+//@desc Update group member
+//@route PUT /api/group_member/:id
+//@access private
+const updateGroupMember = asyncHandler(async (req, res) => {
+    try {
+        const groupMember = await GroupMember.findById({ _id: req.params.id });
+        if (!groupMember) {
+            res.status(404);
+            throw new Error("this id not found");
+        }
+        if (groupMember.user_id.toString() !== req.user.id) {
+            res.status(403);
+            throw new Error("user don't have permission to update other data");
+        }
+    } catch (error) {
+        res.status(404);
+        throw new Error("this id is not found");
+    }
 
-module.exports = { getAllGroupMember, getGroupMemberById, createGroupMember, deleteGroupMember };
+    try {
+        const updateRes = await GroupMember.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        console.log(updateRes);
+        res.status(200).json({ code: 200, message: "success" });
+    } catch (error) {
+        res.status(500).json({ code: 500, message: "internal server error" });
+    }
+});
+
+
+module.exports = { getAllGroupMember, getGroupMemberById, createGroupMember, deleteGroupMember, updateGroupMember };

@@ -37,19 +37,21 @@ const createUserDetail = asyncHandler(async (req, res) => {
     }
 
     try {
-        const userAvailable = await UserDetail.findOne({ email_address: email_address });
+        const userAvailable = await UserDetail.findOne({ email_address });
         if (userAvailable) {
-            res.status(400);
-            throw new Error("user already registered");
+            return res.status(200).json({ code: 400, message: "the user is registered" });
         }
-        const usernameAvailable = await UserDetail.findOne({ username: username });
+        const usernameAvailable = await UserDetail.findOne({ username });
         if (usernameAvailable) {
-            res.status(400);
-            throw new Error("username is available");
+            return res.status(200).json({ code: 400, message: "the username has already" });
+        }
+        const phoneAvailable = await UserDetail.findOne({ phone_number });
+        if (phoneAvailable) {
+            return res.status(200).json({ code: 400, message: "the phone number has already" });
         }
     } catch (error) {
-        res.status(404);
-        throw new Error("this id is not found");
+        res.status(500);
+        throw new Error("internal server error");
     }
 
     const userDetail = await UserDetail.create(
@@ -85,12 +87,12 @@ const updateUserDetail = asyncHandler(async (req, res) => {
     }
 
     try {
-        const updateContact = await UserDetail.findByIdAndUpdate(
+        const updateRes = await UserDetail.findByIdAndUpdate(
             req.params.id,
             req.body,
             { new: true }
         );
-        console.log(updateContact);
+        console.log(updateRes);
         res.status(200).json({ code: 200, message: "success" });
     } catch (error) {
         res.status(500).json({ code: 500, message: "internal server error" });
