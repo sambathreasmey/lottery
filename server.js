@@ -13,6 +13,7 @@ app.use(cors());
 app.use("/api/users", require("./routes/system/userRoutes"));
 app.use("/api/user_detail", require("./routes/userDetailRoutes"));
 app.use("/api/group_member", require("./routes/groupMemberRoutes"));
+app.use("/api/number_detail", require("./routes/numberDetailsRoutes"));
 app.use(errorHandler);
 
 app.listen(port, () => {
