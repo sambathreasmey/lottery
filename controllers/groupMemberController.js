@@ -1,12 +1,13 @@
 const asyncHandler = require("express-async-handler");
 const GroupMember = require("../models/groupMemberModel");
+const { ResultMessage } = require("../pattern/response/resultMessage");
 
 //@desc Get all group member
 //@route GET /api/group_member
 //@access private
 const getAllGroupMember = asyncHandler(async (req, res) => {
     const groupMember = await GroupMember.find();
-    res.status(200).json(groupMember);
+    return res.status(200).json(new ResultMessage(200, 'success', groupMember));
 });
 
 //@desc Get by id group member
@@ -16,13 +17,12 @@ const getGroupMemberById = asyncHandler(async (req, res) => {
     try {
         const groupMember = await GroupMember.findOne({ _id: req.params.id });
         if (!groupMember) {
-            res.status(404);
-            throw new Error("This id is not found");
+            return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
         }
-        res.status(200).json(groupMember);
+        
+        return res.status(200).json(new ResultMessage(200, 'success', groupMember));
     } catch (error) {
-        res.status(404);
-        throw new Error("This id is not found");
+        return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
     }
 });
 
@@ -32,8 +32,7 @@ const getGroupMemberById = asyncHandler(async (req, res) => {
 const createGroupMember = asyncHandler(async (req, res) => {
     const { real_name, nick_name, phone, lottery_type, multi_x2, multi_x3, pay_x2, pay_x3, pay_x4, pay_x5, percentage } = req.body;
     if (!real_name || !nick_name || !phone || !lottery_type || !multi_x2 || !multi_x3 || !pay_x2 || !pay_x3 || !pay_x4 || !pay_x5 || !percentage) {
-        res.status(400);
-        throw new Error("All fields are mandatory !");
+        return res.status(400).json(new ResultMessage(400, 'all fields are mandatory !'));
     }
     const groupMember = await GroupMember.create(
         {
@@ -51,7 +50,7 @@ const createGroupMember = asyncHandler(async (req, res) => {
             user_id: req.user.id
         }
     );
-    res.status(201).json(groupMember);
+    res.status(200).json(new ResultMessage(200, 'insert successful', groupMember));
 });
 
 //@desc Delete group member
@@ -62,24 +61,20 @@ const deleteGroupMember = asyncHandler(async (req, res) => {
     try {
         const groupMember = await GroupMember.findById({ _id: req.params.id });
         if (!groupMember) {
-            res.status(404);
-            throw new Error("This id not found");
+            return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
         }
         if (groupMember.user_id.toString() !== req.user.id) {
-            res.status(403);
-            throw new Error("User don't have permission to update other data");
+            return res.status(403).json(new ResultMessage(403, "user don't have permission to update other data !"));
         }
     } catch (error) {
-        res.status(404);
-        throw new Error("This id is not found");
+        return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
     }
 
     try {
         const resDel = await GroupMember.deleteOne({ _id: req.params.id });
-        console.log(resDel);
-        res.status(200).json({ code: 200, message: "success" });
+        return res.status(201).json(new ResultMessage(200, 'delete successful', resDel));
     } catch (error) {
-        res.status(500).json({ code: 500, message: "internal server error" });
+        return res.status(500).json(new ResultMessage(500, 'internal server error !'));
     }
 
 });
@@ -91,16 +86,13 @@ const updateGroupMember = asyncHandler(async (req, res) => {
     try {
         const groupMember = await GroupMember.findById({ _id: req.params.id });
         if (!groupMember) {
-            res.status(404);
-            throw new Error("this id not found");
+            return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
         }
         if (groupMember.user_id.toString() !== req.user.id) {
-            res.status(403);
-            throw new Error("user don't have permission to update other data");
+            return res.status(403).json(new ResultMessage(403, "user don't have permission to update other data !"));
         }
     } catch (error) {
-        res.status(404);
-        throw new Error("this id is not found");
+        return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
     }
 
     try {
@@ -109,10 +101,9 @@ const updateGroupMember = asyncHandler(async (req, res) => {
             req.body,
             { new: true }
         );
-        console.log(updateRes);
-        res.status(200).json({ code: 200, message: "success" });
+        return res.status(200).json(new ResultMessage(200, 'update successful', updateRes));
     } catch (error) {
-        res.status(500).json({ code: 500, message: "internal server error" });
+        return res.status(500).json(new ResultMessage(500, 'internal server error !'));
     }
 });
 

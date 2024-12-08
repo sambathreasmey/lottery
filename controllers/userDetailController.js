@@ -1,12 +1,13 @@
 const asyncHandler = require("express-async-handler");
 const UserDetail = require("../models/userDetailModel");
+const { ResultMessage } = require("../pattern/response/resultMessage");
 
 //@desc Get all user details
 //@route GET /api/user_detail
 //@access private
 const getUserDetail = asyncHandler(async (req, res) => {
     const userDetail = await UserDetail.find();
-    res.status(200).json(userDetail);
+    return res.status(200).json(new ResultMessage(200, 'success', userDetail));
 });
 
 //@desc Get by id user detail
@@ -16,13 +17,11 @@ const getUserDetailById = asyncHandler(async (req, res) => {
     try {
         const userDetail = await UserDetail.findOne({ _id: req.params.id });
         if (!userDetail) {
-            res.status(404);
-            throw new Error("this id is not found");
+            return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
         }
-        res.status(200).json(userDetail);
+        return res.status(200).json(new ResultMessage(200, 'success', userDetail));
     } catch (error) {
-        res.status(404);
-        throw new Error("this id is not found");
+        return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
     }
 });
 
@@ -32,26 +31,24 @@ const getUserDetailById = asyncHandler(async (req, res) => {
 const createUserDetail = asyncHandler(async (req, res) => {
     const { username, phone_number, password, email_address, address } = req.body;
     if (!username || !phone_number || !password || !email_address || !address) {
-        res.status(400);
-        throw new Error("all fields are mandatory");
+        return res.status(400).json(new ResultMessage(400, 'all fields are mandatory !'));
     }
 
     try {
         const userAvailable = await UserDetail.findOne({ email_address });
         if (userAvailable) {
-            return res.status(200).json({ code: 400, message: "the user is registered" });
+            return res.status(200).json(new ResultMessage(400, 'the user is registered !'));
         }
         const usernameAvailable = await UserDetail.findOne({ username });
         if (usernameAvailable) {
-            return res.status(200).json({ code: 400, message: "the username has already" });
+            return res.status(200).json(new ResultMessage(400, 'the username has already !'));
         }
         const phoneAvailable = await UserDetail.findOne({ phone_number });
         if (phoneAvailable) {
-            return res.status(200).json({ code: 400, message: "the phone number has already" });
+            return res.status(200).json(new ResultMessage(400, 'the phone number has already !'));
         }
     } catch (error) {
-        res.status(500);
-        throw new Error("internal server error");
+        return res.status(500).json(new ResultMessage(500, 'internal server error !'));
     }
 
     const userDetail = await UserDetail.create(
@@ -64,7 +61,7 @@ const createUserDetail = asyncHandler(async (req, res) => {
             user_id: req.user.id
         }
     );
-    res.status(201).json(userDetail);
+    res.status(201).json(new ResultMessage(200, 'insert successful', userDetail));
 });
 
 //@desc Update user details
@@ -74,16 +71,13 @@ const updateUserDetail = asyncHandler(async (req, res) => {
     try {
         const userDetail = await UserDetail.findById({ _id: req.params.id });
         if (!userDetail) {
-            res.status(404);
-            throw new Error("this id not found");
+            return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
         }
         if (userDetail.user_id.toString() !== req.user.id) {
-            res.status(403);
-            throw new Error("user don't have permission to update other data");
+            return res.status(403).json(new ResultMessage(403, "user don't have permission to update other data !"));
         }
     } catch (error) {
-        res.status(404);
-        throw new Error("this id is not found");
+        return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
     }
 
     try {
@@ -92,8 +86,7 @@ const updateUserDetail = asyncHandler(async (req, res) => {
             req.body,
             { new: true }
         );
-        console.log(updateRes);
-        res.status(200).json({ code: 200, message: "success" });
+        return res.status(200).json(new ResultMessage(200, 'update successful', updateRes));
     } catch (error) {
         res.status(500).json({ code: 500, message: "internal server error" });
     }
@@ -106,24 +99,20 @@ const deleteUserDetail = asyncHandler(async (req, res) => {
     try {
         const userDetail = await UserDetail.findById({ _id: req.params.id });
         if (!userDetail) {
-            res.status(404);
-            throw new Error("this id not found");
+            return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
         }
         if (userDetail.user_id.toString() !== req.user.id) {
-            res.status(403);
-            throw new Error("user don't have permission to update other data");
+            return res.status(403).json(new ResultMessage(403, "user don't have permission to update other data !"));
         }
     } catch (error) {
-        res.status(404);
-        throw new Error("this id is not found");
+        return res.status(200).json(new ResultMessage(404, 'this id is not found !'));
     }
 
     try {
         const resDel = await UserDetail.deleteOne({ _id: req.params.id });
-        console.log(resDel);
-        res.status(200).json({ code: 200, message: "success" });
+        return res.status(201).json(new ResultMessage(200, 'delete successful', resDel));
     } catch (error) {
-        res.status(500).json({ code: 500, message: "internal server error" });
+        return res.status(500).json(new ResultMessage(500, 'internal server error !'));
     }
 });
 
@@ -133,8 +122,7 @@ const deleteUserDetail = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
-        res.status(400);
-        throw new Error("All fields are mandatory !");
+        return res.status(400).json(new ResultMessage(400, 'all fields are mandatory !'));
     }
 
     const user = await UserDetail.findOne({ username });
