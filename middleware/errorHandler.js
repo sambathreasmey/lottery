@@ -1,36 +1,37 @@
-const contants = require("../constants");
+const { HANDLE_CONSTANTS } = require("../constants");
+
 const errorHandler = (err, req, res, next) => {
     const statusCode = res.statusCode ? res.statusCode : 500;
     switch (statusCode) {
-        case contants.VALIDATION_ERROR:
+        case HANDLE_CONSTANTS.VALIDATION_ERROR:
             res.json({
                 title: "Validation Failed",
                 message: err.message,
                 stackTrance: err.stack,
             });
             break;
-        case contants.NOT_FOUND:
+        case HANDLE_CONSTANTS.NOT_FOUND:
             res.json({
                 title: "Not Found",
                 message: err.message,
                 stackTrance: err.stack,
             });
             break;
-        case contants.UANUTHORIZED:
+        case HANDLE_CONSTANTS.UANUTHORIZED:
             res.json({
                 title: "Uanuthorized",
                 message: err.message,
                 stackTrance: err.stack,
             });
             break;
-        case contants.FORBIDDEN:
+        case HANDLE_CONSTANTS.FORBIDDEN:
             res.json({
                 title: "Forbidden",
                 message: err.message,
                 stackTrance: err.stack,
             });
             break;
-        case contants.SERVER_ERROR:
+        case HANDLE_CONSTANTS.SERVER_ERROR:
             res.json({
                 title: "Server Error",
                 message: err.message,

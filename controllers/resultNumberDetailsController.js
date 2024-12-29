@@ -3,20 +3,20 @@ const NumberDetail = require("../models/numberDetailsModel");
 const { ResultMessage } = require("../pattern/response/resultMessage");
 const { LOTTERY_TYPE, MESSAGE, CODE } = require("../constants");
 
-//@desc Get all number detail
-//@route GET /api/number_detail
+//@desc Get all result number detail
+//@route GET /api/result_number_detail
 //@access private
-const getAllNumberDetail = asyncHandler(async (req, res) => {
-    const numberDetail = await NumberDetail.find({ type: LOTTERY_TYPE.LOTTERY_NUMBER});
+const getAllResultNumberDetail = asyncHandler(async (req, res) => {
+    const numberDetail = await NumberDetail.find({ type: LOTTERY_TYPE.LOTTERY_RESULT});
     return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, numberDetail));
 });
 
-//@desc Get by id number detail
-//@route GET /api/number_detail
+//@desc Get by id result number detail
+//@route GET /api/result_number_detail
 //@access private
-const getNumberDetailById = asyncHandler(async (req, res) => {
+const getResultNumberDetailById = asyncHandler(async (req, res) => {
     try {
-        const numberDetail = await NumberDetail.findOne({ _id: req.params.id,  type: LOTTERY_TYPE.LOTTERY_NUMBER });
+        const numberDetail = await NumberDetail.findOne({ _id: req.params.id, type: LOTTERY_TYPE.LOTTERY_RESULT});
         if (!numberDetail) {
             return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
         }
@@ -26,38 +26,31 @@ const getNumberDetailById = asyncHandler(async (req, res) => {
     }
 });
 
-//@desc create number detail
-//@route POST /api/number_detail
+//@desc create result number detail
+//@route POST /api/result_number_detail
 //@access private
-const createNumberDetail = asyncHandler(async (req, res) => {
-    const { post_name, post_type, admin_name, group_id, date, lottery_number, lottery_amount, lottery_curency, paper, part, line } = req.body;
-    if (!post_name || !post_type || !admin_name || !group_id || !date || !lottery_number || !lottery_amount || !lottery_curency || !paper || !part || !line) {
+const createResultNumberDetail = asyncHandler(async (req, res) => {
+    const { result_post_name, result_post_type, result_date, result_lottery_number } = req.body;
+    if (!result_post_name || !result_post_type || !result_date || !result_lottery_number) {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
     const numberDetail = await NumberDetail.create(
         {
-            type: LOTTERY_TYPE.LOTTERY_NUMBER,
-            post_name: post_name,
-            post_type: post_type,
-            admin_name: admin_name,
-            group_id: group_id,
-            date: date,
-            lottery_number: lottery_number,
-            lottery_amount: lottery_amount,
-            lottery_curency: lottery_curency,
-            paper: paper,
-            part: part,
-            line: line,
+            type: LOTTERY_TYPE.LOTTERY_RESULT,
+            result_post_name: result_post_name,
+            result_post_type: result_post_type,
+            result_date: result_date,
+            result_lottery_number: result_lottery_number,
             user_id: req.user.id
         }
     );
     res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, numberDetail));
 });
 
-//@desc Delete number detail
-//@route DELETE /api/number_detail/:id
+//@desc Delete result number detail
+//@route DELETE /api/result_number_detail/:id
 //@access private
-const deleteNumberDetail = asyncHandler(async (req, res) => {
+const deleteResultNumberDetail = asyncHandler(async (req, res) => {
 
     try {
         const numberDetail = await NumberDetail.findOne({ _id: req.params.id, type: LOTTERY_TYPE.LOTTERY_RESULT});
@@ -80,10 +73,10 @@ const deleteNumberDetail = asyncHandler(async (req, res) => {
 
 });
 
-//@desc Update number detail
-//@route PUT /api/number_detail/:id
+//@desc Update result number detail
+//@route PUT /api/result_number_detail/:id
 //@access private
-const updateNumberDetail = asyncHandler(async (req, res) => {
+const updateResultNumberDetail = asyncHandler(async (req, res) => {
     try {
         const numberDetail = await NumberDetail.findOne({ _id: req.params.id, type: LOTTERY_TYPE.LOTTERY_RESULT});
         if (!numberDetail) {
@@ -110,4 +103,4 @@ const updateNumberDetail = asyncHandler(async (req, res) => {
 });
 
 
-module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail };
+module.exports = { getAllResultNumberDetail, getResultNumberDetailById, createResultNumberDetail, deleteResultNumberDetail, updateResultNumberDetail };
