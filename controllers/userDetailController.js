@@ -30,8 +30,8 @@ const getUserDetailById = asyncHandler(async (req, res) => {
 //@route POST /api/user_detail
 //@access private
 const createUserDetail = asyncHandler(async (req, res) => {
-    const { username, phone_number, password, email_address, address } = req.body;
-    if (!username || !phone_number || !password || !email_address || !address) {
+    const { username, phone_number, password, email_address, address, role, status } = req.body;
+    if (!username || !phone_number || !password || !email_address || !address || !role || !status) {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
 
@@ -59,6 +59,8 @@ const createUserDetail = asyncHandler(async (req, res) => {
             phone_number: phone_number,
             password: password,
             address: address,
+            role: role,
+            status: status,
             user_id: req.user.id
         }
     );
@@ -129,7 +131,7 @@ const login = asyncHandler(async (req, res) => {
     const user = await UserDetail.findOne({ username });
     //compare password with hashed password
     if (user && password == user.password) {
-        res.status(200).json({ code: CODE.SUCCESS, message: MESSAGE.LOGINED });
+        res.status(200).json({ code: CODE.SUCCESS, message: MESSAGE.LOGINED, user });
     } else {
         res.status(200).json({ code: 203, message: MESSAGE.INVALID_LOGIN });
     }

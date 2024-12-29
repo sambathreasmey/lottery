@@ -26,10 +26,12 @@ const userDetailSchema = mongoose.Schema({
         type: String,
         required: [true, "Please add the phone number"],
     },
-    // role: {
-    //     type: String,
-    //     required: [true, "Please add the phone number"],
-    // },
+    role: {
+        type: Number,
+    },
+    status: {
+        type: Number,
+    },
     // privilege: {
     //     type: String,
     //     required: [true, "Please add the phone number"],
@@ -39,10 +41,6 @@ const userDetailSchema = mongoose.Schema({
     //     required: [true, "Please add the phone number"],
     // },
     // user_otp: {
-    //     type: Number,
-    //     required: [true, "Please add the phone number"],
-    // },
-    // status: {
     //     type: Number,
     //     required: [true, "Please add the phone number"],
     // },
