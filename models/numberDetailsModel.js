@@ -65,7 +65,16 @@ const numberDetailsScheme = mongoose.Schema({
     result_post_type: {
         type: String,
     },
-    result_lottery_number: {
+    result_date: {
+        type: Date,
+    },
+    result_lottery_2number: {
+        type: Number,
+    },
+    result_lottery_3number: {
+        type: Number,
+    },
+    result_lottery_4number: {
         type: Number,
     },
 },

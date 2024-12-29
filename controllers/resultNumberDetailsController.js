@@ -30,8 +30,8 @@ const getResultNumberDetailById = asyncHandler(async (req, res) => {
 //@route POST /api/result_number_detail
 //@access private
 const createResultNumberDetail = asyncHandler(async (req, res) => {
-    const { result_post_name, result_post_type, result_date, result_lottery_number } = req.body;
-    if (!result_post_name || !result_post_type || !result_date || !result_lottery_number) {
+    const { result_post_name, result_post_type, result_date, result_lottery_2number, result_lottery_3number, result_lottery_4number } = req.body;
+    if (!result_post_name || !result_post_type || !result_date) {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
     const numberDetail = await NumberDetail.create(
@@ -40,7 +40,9 @@ const createResultNumberDetail = asyncHandler(async (req, res) => {
             result_post_name: result_post_name,
             result_post_type: result_post_type,
             result_date: result_date,
-            result_lottery_number: result_lottery_number,
+            result_lottery_2number: result_lottery_2number,
+            result_lottery_3number: result_lottery_3number,
+            result_lottery_4number: result_lottery_4number,
             user_id: req.user.id
         }
     );
