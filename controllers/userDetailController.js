@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const UserDetail = require("../models/userDetailModel");
 const { ResultMessage } = require("../pattern/response/resultMessage");
-const { MESSAGE, CODE } = require("../constants");
+const { MESSAGE, CODE, USER_TYPE } = require("../constants");
 
 //@desc Get all user details
 //@route GET /api/user_detail
@@ -36,15 +36,15 @@ const createUserDetail = asyncHandler(async (req, res) => {
     }
 
     try {
-        const userAvailable = await UserDetail.findOne({ email_address });
+        const userAvailable = await UserDetail.findOne({ email_address: email_address});
         if (userAvailable) {
             return res.status(200).json(new ResultMessage(CODE.REQUIRE, 'the user is registered !'));
         }
-        const usernameAvailable = await UserDetail.findOne({ username });
+        const usernameAvailable = await UserDetail.findOne({ username: username });
         if (usernameAvailable) {
             return res.status(200).json(new ResultMessage(CODE.REQUIRE, 'the username has already !'));
         }
-        const phoneAvailable = await UserDetail.findOne({ phone_number });
+        const phoneAvailable = await UserDetail.findOne({ phone_number: phone_number });
         if (phoneAvailable) {
             return res.status(200).json(new ResultMessage(CODE.REQUIRE, 'the phone number has already !'));
         }
@@ -61,6 +61,13 @@ const createUserDetail = asyncHandler(async (req, res) => {
             address: address,
             role: role,
             status: status,
+            // permission setting
+            input_lottery_menu: 0,
+            input_lottery_permission: 0,
+            compare_lottery_menu: 0,
+            compare_lottery_permission: 0,
+            result_lottery_menu: 0,
+            result_lottery_permission: 0,
             user_id: req.user.id
         }
     );
@@ -128,7 +135,7 @@ const login = asyncHandler(async (req, res) => {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
 
-    const user = await UserDetail.findOne({ username });
+    const user = await UserDetail.findOne({ username: username });
     //compare password with hashed password
     if (user && password == user.password) {
         res.status(200).json({ code: CODE.SUCCESS, message: MESSAGE.LOGINED, user });

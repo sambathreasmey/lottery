@@ -15,6 +15,7 @@ app.use("/api/user_detail", require("./routes/userDetailRoutes"));
 app.use("/api/group_member", require("./routes/groupMemberRoutes"));
 app.use("/api/number_detail", require("./routes/numberDetailsRoutes"));
 app.use("/api/result_number_detail", require("./routes/resultNumberDetailsRoutes"));
+app.use("/api/permission", require("./routes/permissionRoutes"));
 app.use(errorHandler);
 
 app.listen(port, () => {

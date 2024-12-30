@@ -98,7 +98,7 @@ const updateResultNumberDetail = asyncHandler(async (req, res) => {
             { new: true }
         );
         
-        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.UP, updateRes));
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.UPDATED, updateRes));
     } catch (error) {
         res.status(500).json({ code: CODE.GENERAL_EXCEPTION, message: MESSAGE.GENERAL_EXCEPTION });
     }

@@ -8,23 +8,18 @@ const userDetailSchema = mongoose.Schema({
     },
     username: {
         type: String,
-        required: [true, "Please add the name"],
     },
     phone_number: {
         type: String,
-        required: [true, "Please add the phone number"],
     },
     email_address: {
         type: String,
-        required: [true, "Please add the phone number"],
     },
     password: {
         type: String,
-        required: [true, "Please add the phone number"],
     },
     address: {
         type: String,
-        required: [true, "Please add the phone number"],
     },
     role: {
         type: Number,
@@ -32,22 +27,25 @@ const userDetailSchema = mongoose.Schema({
     status: {
         type: Number,
     },
-    // privilege: {
-    //     type: String,
-    //     required: [true, "Please add the phone number"],
-    // },
-    // attemp: {
-    //     type: Number,
-    //     required: [true, "Please add the phone number"],
-    // },
-    // user_otp: {
-    //     type: Number,
-    //     required: [true, "Please add the phone number"],
-    // },
-    // group_id: {
-    //     type: String,
-    //     required: [true, "Please add the phone number"],
-    // },
+    // user privilege 
+    input_lottery_menu: {
+        type: Number,
+    },
+    input_lottery_permission: {
+        type: Number,
+    },
+    compare_lottery_menu: {
+        type: Number,
+    },
+    compare_lottery_permission: {
+        type: Number,
+    },
+    result_lottery_menu: {
+        type: Number,
+    },
+    result_lottery_permission: {
+        type: Number,
+    },
 },
     {
         timestamps: true,
