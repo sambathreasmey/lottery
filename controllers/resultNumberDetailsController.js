@@ -10,10 +10,10 @@ const getAllResultNumberDetail = asyncHandler(async (req, res) => {
     const numberDetail = await NumberDetail.find({ type: LOTTERY_TYPE.LOTTERY_RESULT});
 
     // DEV ONLY delete all
-    // numberDetail.forEach(async num => {
-    //     console.log(num._id);
-    //     const resDel = await NumberDetail.deleteOne({ _id: num._id });
-    // });
+    numberDetail.forEach(async num => {
+        console.log(num._id);
+        const resDel = await NumberDetail.deleteOne({ _id: num._id });
+    });
 
     return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, numberDetail));
 });
