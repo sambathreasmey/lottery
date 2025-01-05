@@ -8,6 +8,13 @@ const { LOTTERY_TYPE, MESSAGE, CODE } = require("../constants");
 //@access private
 const getAllResultNumberDetail = asyncHandler(async (req, res) => {
     const numberDetail = await NumberDetail.find({ type: LOTTERY_TYPE.LOTTERY_RESULT});
+
+    // DEV ONLY delete all
+    // numberDetail.forEach(async num => {
+    //     console.log(num._id);
+    //     const resDel = await NumberDetail.deleteOne({ _id: num._id });
+    // });
+
     return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, numberDetail));
 });
 
@@ -30,23 +37,26 @@ const getResultNumberDetailById = asyncHandler(async (req, res) => {
 //@route POST /api/result_number_detail
 //@access private
 const createResultNumberDetail = asyncHandler(async (req, res) => {
-    const { result_post_name, result_post_type, result_date, result_lottery_2number, result_lottery_3number, result_lottery_4number } = req.body;
-    if (!result_post_name || !result_post_type || !result_date) {
-        return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
-    }
-    const numberDetail = await NumberDetail.create(
-        {
-            type: LOTTERY_TYPE.LOTTERY_RESULT,
-            result_post_name: result_post_name,
-            result_post_type: result_post_type,
-            result_date: result_date,
-            result_lottery_2number: result_lottery_2number,
-            result_lottery_3number: result_lottery_3number,
-            result_lottery_4number: result_lottery_4number,
-            user_id: req.user.id
+    const reqNumberDetails = req.body;
+    reqNumberDetails.forEach(async reqNumberDetail => {
+        const { result_post_name, result_post_type, result_date, result_lottery_2number, result_lottery_3number, result_lottery_4number } = reqNumberDetail;
+        if (!result_post_name || !result_post_type || !result_date) {
+            return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
         }
-    );
-    res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, numberDetail));
+        const numberDetail = await NumberDetail.create(
+            {
+                type: LOTTERY_TYPE.LOTTERY_RESULT,
+                result_post_name: result_post_name,
+                result_post_type: result_post_type,
+                result_date: result_date,
+                result_lottery_2number: result_lottery_2number,
+                result_lottery_3number: result_lottery_3number,
+                result_lottery_4number: result_lottery_4number,
+                user_id: req.user.id
+            }
+        );
+    });
+    res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, reqNumberDetails));
 });
 
 //@desc Delete result number detail
