@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/system/userAPIModel");
+const CryptoJS = require('crypto-js');
 
 //@desc Register a user
 //@route POST /api/users/register
@@ -36,11 +37,48 @@ const registerUser = asyncHandler(async (req, res) => {
     res.json({ message: "Register the user" });
 });
 
+
+// Function to derive a key from a password and salt
+function deriveKey(password, salt) {
+    return CryptoJS.PBKDF2(password, salt, { keySize: 256 / 32, iterations: 100 });
+}
+
+// Function to decrypt data
+function decrypt(encryptedData, password) {
+    // Extract salt, iv, and encrypted data
+    const saltHex = encryptedData.substr(0, 32); // First 32 characters for salt
+    const ivHex = encryptedData.substr(32, 32); // Next 32 characters for IV
+    const encryptedHex = encryptedData.substr(64); // Remaining characters for encrypted data
+
+    // Convert hex to WordArray
+    const salt = CryptoJS.enc.Hex.parse(saltHex);
+    const iv = CryptoJS.enc.Hex.parse(ivHex);
+    const encrypted = CryptoJS.enc.Base64.parse(encryptedHex); // Encrypted data is in Base64
+
+    // Derive the key using PBKDF2
+    const key = deriveKey(password, salt);
+
+    // Decrypt the data
+    const decrypted = CryptoJS.AES.decrypt(
+        { ciphertext: encrypted },
+        key,
+        { iv: iv }
+    );
+
+    return decrypted.toString(CryptoJS.enc.Utf8); // Return decrypted string
+}
+
 //@desc Login a user
 //@route POST /api/users/login
 //@access public
 const loginUser = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+
+    const { encryptedData } = req.body;
+
+    const jsonString = decrypt(encryptedData, process.env.AES_PASSWORD);
+    const jsonObject = JSON.parse(jsonString);
+
+    const { email, password } = jsonObject;
     if (!email || !password) {
         res.status(400);
         throw new Error("All fields are mandatory!");
