@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/system/userAPIModel");
 const CryptoJS = require('crypto-js');
+const { Util } = require("../../util");
 
 //@desc Register a user
 //@route POST /api/users/register
@@ -58,7 +59,7 @@ function decrypt(encryptedData, password) {
     const encrypted = CryptoJS.enc.Base64.parse(encryptedHex); // Encrypted data is in Base64
 
     // Check if the current time exceeds the expiration time
-    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    const currentTime = Math.floor(new Util().getCurrentTimeInCambodia().timestamp); // Current time in seconds
     if (currentTime > expirationTime) {
         return "expired";
     }
