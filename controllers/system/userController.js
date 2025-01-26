@@ -59,6 +59,7 @@ function decrypt(encryptedData, password) {
     const encrypted = CryptoJS.enc.Base64.parse(encryptedHex); // Encrypted data is in Base64
 
     // Check if the current time exceeds the expiration time
+    console.log(new Util().getCurrentTime().formattedDate);
     const currentTime = Math.floor(new Util().getCurrentTime().timestamp); // Current time in seconds
     if (currentTime > expirationTime) {
         return "expired";
