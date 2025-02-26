@@ -59,9 +59,7 @@ function decrypt(encryptedData, password) {
     const encrypted = CryptoJS.enc.Base64.parse(encryptedHex); // Encrypted data is in Base64
 
     // Check if the current time exceeds the expiration time
-    console.log("Expired Time ::: " + expirationTime);
     const currentTime = Math.floor(new Util().getCurrentTime().timestamp); // Current time in seconds
-    console.log("Current Time ::: " + currentTime);
     if (currentTime > expirationTime) {
         return "expired";
     }
@@ -121,4 +119,15 @@ const currentUser = asyncHandler(async (req, res) => {
     res.json(req.user);
 });
 
-module.exports = { registerUser, loginUser, currentUser };
+
+//@desc current a user
+//@route POST /api/users/current
+//@access private
+const loginMobileApp = asyncHandler(async (req, res) => {
+    res.json({
+        "username": "sambathreasmey"
+    });
+});
+
+
+module.exports = { registerUser, loginUser, currentUser, loginMobileApp };
