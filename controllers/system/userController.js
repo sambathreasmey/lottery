@@ -120,14 +120,4 @@ const currentUser = asyncHandler(async (req, res) => {
 });
 
 
-//@desc current a user
-//@route POST /api/users/current
-//@access private
-const loginMobileApp = asyncHandler(async (req, res) => {
-    res.json({
-        "username": "sambathreasmey"
-    });
-});
-
-
-module.exports = { registerUser, loginUser, currentUser, loginMobileApp };
+module.exports = { registerUser, loginUser, currentUser };
