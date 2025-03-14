@@ -60,6 +60,8 @@ function decrypt(encryptedData, password) {
 
     // Check if the current time exceeds the expiration time
     const currentTime = Math.floor(new Util().getCurrentTime().timestamp); // Current time in seconds
+    console.log('currentTime ::::: ' + currentTime);
+    console.log('expirationTime ::::: ' + expirationTime);
     if (currentTime > expirationTime) {
         return "expired";
     }
