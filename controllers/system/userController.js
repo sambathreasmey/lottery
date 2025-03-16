@@ -88,7 +88,7 @@ const currentUser = asyncHandler(async (req, res) => {
 //@access private
 const developerMode = asyncHandler(async (req, res) => {
     const jsonString = JSON.stringify(req.body);
-    res.json({encryptedData: encrypt(jsonString,  process.env.AES_PASSWORD, 60)});
+    res.json({encryptedData: encrypt(jsonString,  process.env.AES_PASSWORD, 482)});
 });
 
 
