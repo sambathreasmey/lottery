@@ -18,6 +18,7 @@ app.use("/api/result_number_detail", require("./routes/resultNumberDetailsRoutes
 app.use("/api/post_category_detail", require("./routes/postCategoryRoutes"));
 app.use("/api/post_sub_category_detail", require("./routes/postSubCategoryRoutes"));
 app.use("/api/permission", require("./routes/permissionRoutes"));
+app.use("/api/shortcut", require("./routes/shortcutRoutes"));
 app.use(errorHandler);
 
 app.listen(port, () => {
