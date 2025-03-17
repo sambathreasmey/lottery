@@ -12,9 +12,9 @@ const shortcutDetialSchema = mongoose.Schema({
     key: {
         type: String,
     },
-    actions: {
-        type: String,
-    },
+    // actions: {
+    //     type: String,
+    // },
     type: {
         type: String,
     },
