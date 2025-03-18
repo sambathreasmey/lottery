@@ -67,8 +67,8 @@ const getScheduleById = asyncHandler(async (req, res) => {
 //@route POST /api/shortcut
 //@access private
 const createPost = asyncHandler(async (req, res) => {
-    const { val, key, actions } = req.body;
-    if (!val || !key || !actions) {
+    const { val, key } = req.body;
+    if (!val || !key) {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
     const shortcutDetail = await ShortcutModel.create(
@@ -76,7 +76,6 @@ const createPost = asyncHandler(async (req, res) => {
             type: SHORTCUT_TYPE.POST,
             val: val,
             key: key,
-            actions: actions,
             user_id: req.user.id
         }
     );
@@ -87,8 +86,8 @@ const createPost = asyncHandler(async (req, res) => {
 //@route POST /api/shortcut
 //@access private
 const createSchedule = asyncHandler(async (req, res) => {
-    const { val, key, actions } = req.body;
-    if (!val || !key || !actions) {
+    const { val, key } = req.body;
+    if (!val || !key) {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
     const shortcutDetail = await ShortcutModel.create(
@@ -96,7 +95,6 @@ const createSchedule = asyncHandler(async (req, res) => {
             type: SHORTCUT_TYPE.SCHEDULE,
             val: val,
             key: key,
-            actions: actions,
             user_id: req.user.id
         }
     );
