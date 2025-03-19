@@ -51,6 +51,10 @@ const memberGroupScheme = mongoose.Schema({
         type: Number,
         required: [true, "The percentage is required!"],
     },
+    key: {
+        type: String,
+        required: [true, "The key is required!"],
+    },
 },
     {
         timestamps: true,

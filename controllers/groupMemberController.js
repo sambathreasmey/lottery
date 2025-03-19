@@ -31,8 +31,8 @@ const getGroupMemberById = asyncHandler(async (req, res) => {
 //@route POST /api/group_member
 //@access private
 const createGroupMember = asyncHandler(async (req, res) => {
-    const { real_name, nick_name, phone, lottery_type, multi_x2, multi_x3, pay_x2, pay_x3, pay_x4, pay_x5, percentage } = req.body;
-    if (!real_name || !nick_name || !phone || !lottery_type || !multi_x2 || !multi_x3 || !pay_x2 || !pay_x3 || !pay_x4 || !pay_x5 || !percentage) {
+    const { real_name, nick_name, phone, lottery_type, multi_x2, multi_x3, pay_x2, pay_x3, pay_x4, pay_x5, percentage, key } = req.body;
+    if (!real_name || !nick_name || !phone || !lottery_type || !multi_x2 || !multi_x3 || !pay_x2 || !pay_x3 || !pay_x4 || !pay_x5 || !percentage || !key) {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
     const groupMember = await GroupMember.create(
@@ -48,6 +48,7 @@ const createGroupMember = asyncHandler(async (req, res) => {
             pay_x4: pay_x4,
             pay_x5: pay_x5,
             percentage: percentage,
+            key: key,
             user_id: req.user.id
         }
     );
