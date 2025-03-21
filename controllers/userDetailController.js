@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const UserDetail = require("../models/userDetailModel");
 const { ResultMessage } = require("../pattern/response/resultMessage");
 const { MESSAGE, CODE, USER_TYPE } = require("../constants");
+const { Util } = require("../util");
 
 //@desc Get all user details
 //@route GET /api/user_detail
@@ -135,9 +136,18 @@ const login = asyncHandler(async (req, res) => {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
 
-    const user = await UserDetail.findOne({ username: username });
+    const userDetail = await UserDetail.findOne({ username: username });
     //compare password with hashed password
-    if (user && password == user.password) {
+    if (userDetail && password == userDetail.password) {
+        user = {
+            "_id": userDetail._id,
+            "username": userDetail.username,
+            "phone_number": userDetail.phone_number,
+            "email_address": userDetail.email_address,
+            "address": userDetail.address,
+            "login_on": new Util().getCurrentTime().formattedDate,
+            "time_out": 43200,
+        }
         res.status(200).json({ code: CODE.SUCCESS, message: MESSAGE.LOGINED, user });
     } else {
         res.status(200).json({ code: 203, message: MESSAGE.INVALID_LOGIN });
