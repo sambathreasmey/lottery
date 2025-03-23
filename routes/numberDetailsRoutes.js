@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const validateToken = require("../middleware/validateTokenHandler");
-const { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail } = require("../controllers/numberDetailsController");
+const { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, createNumberDetailV2 } = require("../controllers/numberDetailsController");
 
 router.use(validateToken);
 router.route("/").get(getAllNumberDetail);

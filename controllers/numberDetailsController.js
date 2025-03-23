@@ -8,6 +8,13 @@ const { LOTTERY_TYPE, MESSAGE, CODE } = require("../constants");
 //@access private
 const getAllNumberDetail = asyncHandler(async (req, res) => {
     const numberDetail = await NumberDetail.find({ type: LOTTERY_TYPE.LOTTERY_NUMBER});
+
+    //DEV ONLY delete all
+    // numberDetail.forEach(async num => {
+    //     console.log(num._id);
+    //     const resDel = await NumberDetail.deleteOne({ _id: num._id });
+    // });
+
     return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, numberDetail));
 });
 
@@ -30,28 +37,56 @@ const getNumberDetailById = asyncHandler(async (req, res) => {
 //@route POST /api/number_detail
 //@access private
 const createNumberDetail = asyncHandler(async (req, res) => {
-    const { post_name, post_type, admin_name, group_id, date, lottery_number, lottery_amount, lottery_curency, paper, part, line } = req.body;
-    if (!post_name || !post_type || !admin_name || !group_id || !date || !lottery_number || !lottery_amount || !lottery_curency || !paper || !part || !line) {
-        return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
-    }
-    const numberDetail = await NumberDetail.create(
-        {
+    const dataEntries = [];
+
+    req.body.forEach(item => {
+        const { page_no, date, time, group, datas } = item;
+
+        datas.forEach(data => {
+            const { column_no, main_row } = data;
+
+            main_row.forEach(rowItem => {
+                const { row, post, schedule } = rowItem;
+
+                row.forEach(rowData => {
+                    const { number, amount, currency } = rowData;
+                    const formattedData = {
+                        page_no,
+                        date,
+                        time,
+                        group,
+                        column_no,
+                        number,
+                        amount,
+                        currency,
+                        post,
+                        schedule
+                    };
+
+                    dataEntries.push(formattedData);
+                });
+            });
+        });
+    });
+
+    const newDataEntries = await Promise.all(dataEntries.map(async (entry) => {
+        const { page_no, date, time, group, column_no, number, amount, currency, post, schedule } = entry;
+
+        return await NumberDetail.create({
             type: LOTTERY_TYPE.LOTTERY_NUMBER,
-            post_name: post_name,
-            post_type: post_type,
-            admin_name: admin_name,
-            group_id: group_id,
-            date: date,
-            lottery_number: lottery_number,
-            lottery_amount: lottery_amount,
-            lottery_curency: lottery_curency,
-            paper: paper,
-            part: part,
-            line: line,
-            user_id: req.user.id
-        }
-    );
-    res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, numberDetail));
+            page_no,
+            date,
+            time,
+            group,
+            column_no,
+            number,
+            amount,
+            currency,
+            post,
+            schedule
+        });
+    }));
+    res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, newDataEntries));
 });
 
 //@desc Delete number detail
