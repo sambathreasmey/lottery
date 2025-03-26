@@ -31,12 +31,14 @@ bot.onText(/\/help/, (msg) => {
 
 bot.onText(/\/schedule/, (msg) => {
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Scheduling a task every 15 minutes.');
+    bot.sendMessage(chatId, 'Scheduling a task every 1 minutes.');
 
     // Schedule a task to run every 15 minutes
-    cron.schedule('*/1 * * * * *', () => {
+    var i = 1;
+    cron.schedule('*/59 * * * * *', () => {
         try {
-            bot.sendMessage(chatId, 'This message is sent every 15 minutes!');
+            bot.sendMessage(chatId, i);
+            i++;
         } catch (error) {
             console.error('Error sending message:', error);
         }
