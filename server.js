@@ -4,6 +4,7 @@ const errorHandler = require("./middleware/errorHandler");
 const connectDb = require("./config/dbConnection");
 const dotenv = require("dotenv").config();
 const TelegramBot = require('node-telegram-bot-api');
+const cron = require('node-cron');
 
 connectDb();
 const app = express();
@@ -33,7 +34,7 @@ bot.onText(/\/schedule/, (msg) => {
     bot.sendMessage(chatId, 'Scheduling a task every 15 minutes.');
 
     // Schedule a task to run every 15 minutes
-    cron.schedule('*/15 * * * *', () => {
+    cron.schedule('*/1 * * * * *', () => {
         try {
             bot.sendMessage(chatId, 'This message is sent every 15 minutes!');
         } catch (error) {

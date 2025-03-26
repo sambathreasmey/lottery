@@ -144,5 +144,35 @@ const updateNumberDetail = asyncHandler(async (req, res) => {
     }
 });
 
+//@desc POST number details filtered by schedule, date, group, and page number
+//@route POST /api/number_details/inp_check
+//@access private
+const inputCheckNumberFilter = asyncHandler(async (req, res) => {
+    console.log(req.body);
+    const { schedule, date, group, page_no } = req.body;
 
-module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail };
+    // Build the query object based on provided filters
+    const query = {};
+    if (schedule) {
+        query.schedule = schedule;
+    }
+    if (date) {
+        query.date = date;
+    }
+    if (group) {
+        query.group = group;
+    }
+    if (page_no) {
+        query.page_no = page_no;
+    }
+
+    try {
+        const numberDetails = await NumberDetail.find(query).exec();
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.UP, numberDetails));
+    } catch (error) {
+        return res.status(500).json(new ResultMessage(CODE.ERROR, MESSAGE.ERROR, error.message));
+    }
+});
+
+
+module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter };
