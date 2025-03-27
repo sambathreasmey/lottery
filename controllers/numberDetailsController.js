@@ -168,7 +168,41 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
 
     try {
         const numberDetails = await NumberDetail.find(query).exec();
-        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.UP, numberDetails));
+
+        const reconstructedData = [];
+        const grouped = {};
+        dataEntries.forEach(entry => {
+            const { page_no, date, time, group, column_no, number, amount, currency, post, schedule } = entry;
+            
+            const key = `${page_no}|${date}|${time}|${group}`;
+            if (!grouped[key]) {
+                grouped[key] = { page_no, date, time, group, datas: {} };
+            }
+        
+            if (!grouped[key].datas[column_no]) {
+                grouped[key].datas[column_no] = { column_no, main_row: {} };
+            }
+        
+            const postKey = `${post}|${schedule}`;
+            if (!grouped[key].datas[column_no].main_row[postKey]) {
+                grouped[key].datas[column_no].main_row[postKey] = { post, schedule, row: [] };
+            }
+        
+            grouped[key].datas[column_no].main_row[postKey].row.push({ number, amount, currency });
+        });
+        
+        // Convert back to the original array structure
+        for (const key in grouped) {
+            const { page_no, date, time, group, datas } = grouped[key];
+            const formattedDatas = Object.values(datas).map(({ column_no, main_row }) => ({
+                column_no,
+                main_row: Object.values(main_row)
+            }));
+        
+            reconstructedData.push({ page_no, date, time, group, datas: formattedDatas });
+        }
+        
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.UP, reconstructedData));
     } catch (error) {
         return res.status(500).json(new ResultMessage(CODE.ERROR, MESSAGE.ERROR, error.message));
     }
