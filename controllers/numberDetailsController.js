@@ -3,6 +3,7 @@ const NumberDetail = require("../models/numberDetailsModel");
 const { ResultMessage } = require("../pattern/response/resultMessage");
 const { LOTTERY_TYPE, MESSAGE, CODE } = require("../constants");
 
+
 //@desc Get all number detail
 //@route GET /api/number_detail
 //@access private
