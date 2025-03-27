@@ -171,7 +171,7 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
 
         const reconstructedData = [];
         const grouped = {};
-        dataEntries.forEach(entry => {
+        numberDetails.forEach(entry => {
             const { page_no, date, time, group, column_no, number, amount, currency, post, schedule } = entry;
             
             const key = `${page_no}|${date}|${time}|${group}`;
