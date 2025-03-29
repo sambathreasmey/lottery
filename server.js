@@ -3,8 +3,8 @@ const cors = require('cors');
 const errorHandler = require("./middleware/errorHandler");
 const connectDb = require("./config/dbConnection");
 const dotenv = require("dotenv").config();
-const TelegramBot = require('node-telegram-bot-api');
-const cron = require('node-cron');
+// const TelegramBot = require('node-telegram-bot-api');
+// const cron = require('node-cron');
 
 connectDb();
 const app = express();
@@ -14,36 +14,36 @@ app.use(express.json());
 app.use(cors());
 
 
-// Initialize the Telegram bot
-const TOKEN = process.env.TELEGRAM_BOT_TOKEN; // Add your Telegram bot token to .env
-const bot = new TelegramBot(TOKEN, { polling: true });
+// // Initialize the Telegram bot
+// const TOKEN = process.env.TELEGRAM_BOT_TOKEN; // Add your Telegram bot token to .env
+// const bot = new TelegramBot(TOKEN, { polling: true });
 
-// Telegram Bot Commands
-bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Welcome to the bot! Use /help to see available commands.');
-});
+// // Telegram Bot Commands
+// bot.onText(/\/start/, (msg) => {
+//     const chatId = msg.chat.id;
+//     bot.sendMessage(chatId, 'Welcome to the bot! Use /help to see available commands.');
+// });
 
-bot.onText(/\/help/, (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Available commands:\n/start - Start the bot\n/help - List commands');
-});
+// bot.onText(/\/help/, (msg) => {
+//     const chatId = msg.chat.id;
+//     bot.sendMessage(chatId, 'Available commands:\n/start - Start the bot\n/help - List commands');
+// });
 
-bot.onText(/\/schedule/, (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Scheduling a task every 1 minutes.');
+// bot.onText(/\/schedule/, (msg) => {
+//     const chatId = msg.chat.id;
+//     bot.sendMessage(chatId, 'Scheduling a task every 1 minutes.');
 
-    // Schedule a task to run every 15 minutes
-    var i = 1;
-    cron.schedule('*/59 * * * * *', () => {
-        try {
-            bot.sendMessage(chatId, i);
-            i++;
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
-    });
-});
+//     // Schedule a task to run every 15 minutes
+//     var i = 1;
+//     cron.schedule('*/59 * * * * *', () => {
+//         try {
+//             bot.sendMessage(chatId, i);
+//             i++;
+//         } catch (error) {
+//             console.error('Error sending message:', error);
+//         }
+//     });
+// });
 
 
 app.use("/api/users", require("./routes/system/userRoutes"));

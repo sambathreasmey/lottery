@@ -174,5 +174,27 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
     }
 });
 
+//@desc create compare number detail
+//@route POST /api/number_details/inp_submit
+//@access private
+const createCompareNumberDetail = asyncHandler(async (req, res) => {
+    const reqNumberDetails = req.body;
+    reqNumberDetails.forEach(async reqNumberDetail => {
+        const { check_amount, check_id } = reqNumberDetail;
+        if ( !check_amount || !check_id ) {
+            return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
+        }
+        const numberDetail = await NumberDetail.create(
+            {
+                type: LOTTERY_TYPE.LOTTERY_COMPARE,
+                check_amount: check_amount,
+                check_id: check_id,
+                user_id: req.user.id
+            }
+        );
+    });
+    res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, reqNumberDetails));
+});
 
-module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter };
+
+module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter, createCompareNumberDetail};

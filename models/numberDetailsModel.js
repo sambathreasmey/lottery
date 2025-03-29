@@ -58,16 +58,16 @@ const numberDetailsScheme = mongoose.Schema({
     //     // required: [true, "The line is required!"],
     // },
 
-    page_no: { type: Number, required: true },
-    date: { type: String, required: true },
-    time: { type: String, required: true },
-    group: { type: String, required: true },
-    column_no: { type: Number, required: true },
-    number: { type: Number, required: true },
-    amount: { type: Number, required: true },
-    currency: { type: String, required: true },
-    post: { type: String, required: true },
-    schedule: { type: String, required: true },
+    page_no: { type: Number },
+    date: { type: String },
+    time: { type: String },
+    group: { type: String },
+    column_no: { type: Number },
+    number: { type: Number },
+    amount: { type: Number },
+    currency: { type: String },
+    post: { type: String },
+    schedule: { type: String },
 
     // Lottery result field
     result_post_name: {
@@ -88,6 +88,10 @@ const numberDetailsScheme = mongoose.Schema({
     result_lottery_4number: {
         type: Number,
     },
+
+    // Lottery compare
+    check_amount: { type: Number },
+    check_id: { type: String },
 },
     {
         timestamps: true,
