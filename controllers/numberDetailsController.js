@@ -215,21 +215,31 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
 const createCompareNumberDetail = asyncHandler(async (req, res) => {
     const reqNumberDetails = req.body;
     const numberDetailResponse = [];
-    reqNumberDetails.forEach(async reqNumberDetail => {
+
+    // Validate input
+    for (const reqNumberDetail of reqNumberDetails) {
         const { check_amount, check_id } = reqNumberDetail;
-        if ( !check_amount || !check_id ) {
-            return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
+        if (!check_amount || !check_id) {
+            return res.status(400).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
         }
-        const numberDetail = await NumberDetail.create(
-            {
-                type: LOTTERY_TYPE.LOTTERY_COMPARE,
-                check_amount: check_amount,
-                check_id: check_id,
-                user_id: req.user.id
-            }
-        );
-        numberDetailResponse.push(numberDetail);
+    }
+
+    // Create number details
+    const createPromises = reqNumberDetails.map(async reqNumberDetail => {
+        const { check_amount, check_id } = reqNumberDetail;
+        const numberDetail = await NumberDetail.create({
+            type: LOTTERY_TYPE.LOTTERY_COMPARE,
+            check_amount: check_amount,
+            check_id: check_id,
+            user_id: req.user.id
+        });
+        return numberDetail;
     });
+
+    // Wait for all promises to resolve
+    numberDetailResponse.push(...await Promise.all(createPromises));
+
+    // Send response
     res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, numberDetailResponse));
 });
 
