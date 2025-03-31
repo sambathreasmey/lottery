@@ -214,6 +214,7 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
 //@access private
 const createCompareNumberDetail = asyncHandler(async (req, res) => {
     const reqNumberDetails = req.body;
+    const numberDetailResponse = [];
     reqNumberDetails.forEach(async reqNumberDetail => {
         const { check_amount, check_id } = reqNumberDetail;
         if ( !check_amount || !check_id ) {
@@ -227,8 +228,9 @@ const createCompareNumberDetail = asyncHandler(async (req, res) => {
                 user_id: req.user.id
             }
         );
+        numberDetailResponse.push(numberDetail);
     });
-    res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, reqNumberDetails));
+    res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, numberDetailResponse));
 });
 
 module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter, createCompareNumberDetail};
