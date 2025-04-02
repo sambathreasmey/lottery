@@ -139,7 +139,7 @@ const updateNumberDetail = asyncHandler(async (req, res) => {
             { new: true }
         );
         
-        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.UP, updateRes));
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, updateRes));
     } catch (error) {
         res.status(500).json({ code: CODE.GENERAL_EXCEPTION, message: MESSAGE.GENERAL_EXCEPTION });
     }
@@ -168,52 +168,71 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
     }
 
     try {
+        // Find numberDetails based on the query
         const numberDetails = await NumberDetail.find(query).exec();
 
-        const reconstructedData = [];
+        // Collect all the _id values from numberDetails to query for related entries in a single request
+        const idsToCheck = numberDetails.map(entry => entry._id);
+
+        // Fetch all related numberDetailsCheck in one query
+        const numberDetailsCheckList = await NumberDetail.find({
+            type: LOTTERY_TYPE.LOTTERY_COMPARE,
+            check_id: { $in: idsToCheck }
+        }).exec();
+
+        // Create a lookup map for the check details, keyed by check_id
+        const checkDetailsMap = numberDetailsCheckList.reduce((acc, entry) => {
+            acc[entry.check_id] = entry;
+            return acc;
+        }, {});
+
         const grouped = {};
-        numberDetails.forEach(async entry => {
-            const { page_no, date, time, group, column_no, number, amount, currency, post, schedule } = entry;
-            
+
+        // Process each entry from numberDetails
+        numberDetails.forEach(entry => {
+            const { page_no, date, time, group, column_no, number, amount, currency, post, schedule, type, _id } = entry;
+
             const key = `${page_no}|${date}|${time}|${group}`;
             if (!grouped[key]) {
                 grouped[key] = { page_no, date, time, group, datas: {} };
             }
-        
+
             if (!grouped[key].datas[column_no]) {
                 grouped[key].datas[column_no] = { column_no, main_row: {} };
             }
-        
+
             const postKey = `${post}|${schedule}`;
             if (!grouped[key].datas[column_no].main_row[postKey]) {
                 grouped[key].datas[column_no].main_row[postKey] = { post, schedule, row: [] };
             }
-        
-            grouped[key].datas[column_no].main_row[postKey].row.push({ number, amount, currency });
 
-            const numberDetailsCheck = await NumberDetail.find({type: LOTTERY_TYPE.LOTTERY_COMPARE, check_id: _id});
-            if (numberDetailsCheck) {
-                const {check_id} = numberDetailsCheck;
-                grouped[key].datas[column_no].main_row[postKey].row.push({ number, amount, currency, check_id });
+            // Add the primary row data
+            grouped[key].datas[column_no].main_row[postKey].row.push({ number, amount, currency, type, _id });
+
+            // Check if there are related numberDetailsCheck for this entry
+            const numberDetailsCheck = checkDetailsMap[_id];
+            if (numberDetailsCheck) { // Check if there are any results
+                const { check_id, type, check_amount } = numberDetailsCheck;
+                grouped[key].datas[column_no].main_row[postKey].row.push({ number: '', amount: '', currency, check_id, type, check_amount });
             }
         });
-        
+
         // Convert back to the original array structure
-        for (const key in grouped) {
-            const { page_no, date, time, group, check_id, datas } = grouped[key];
+        const reconstructedData = Object.values(grouped).map(({ page_no, date, time, group, datas }) => {
             const formattedDatas = Object.values(datas).map(({ column_no, main_row }) => ({
                 column_no,
                 main_row: Object.values(main_row)
             }));
-        
-            reconstructedData.push({ page_no, date, time, group, check_id, datas: formattedDatas });
-        }
-        
-        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.UP, reconstructedData));
+
+            return { page_no, date, time, group, datas: formattedDatas };
+        });
+
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, reconstructedData));
     } catch (error) {
         return res.status(500).json(new ResultMessage(CODE.ERROR, MESSAGE.ERROR, error.message));
     }
 });
+
 
 //@desc create compare number detail
 //@route POST /api/number_details/inp_submit
