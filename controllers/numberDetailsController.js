@@ -172,7 +172,7 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
 
         const reconstructedData = [];
         const grouped = {};
-        numberDetails.forEach(entry => {
+        numberDetails.forEach(async entry => {
             const { page_no, date, time, group, column_no, number, amount, currency, post, schedule } = entry;
             
             const key = `${page_no}|${date}|${time}|${group}`;
@@ -190,17 +190,23 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
             }
         
             grouped[key].datas[column_no].main_row[postKey].row.push({ number, amount, currency });
+
+            const numberDetailsCheck = await NumberDetail.find({type: LOTTERY_TYPE.LOTTERY_COMPARE, check_id: _id});
+            if (numberDetailsCheck) {
+                const {check_id} = numberDetailsCheck;
+                grouped[key].datas[column_no].main_row[postKey].row.push({ number, amount, currency, check_id });
+            }
         });
         
         // Convert back to the original array structure
         for (const key in grouped) {
-            const { page_no, date, time, group, datas } = grouped[key];
+            const { page_no, date, time, group, check_id, datas } = grouped[key];
             const formattedDatas = Object.values(datas).map(({ column_no, main_row }) => ({
                 column_no,
                 main_row: Object.values(main_row)
             }));
         
-            reconstructedData.push({ page_no, date, time, group, datas: formattedDatas });
+            reconstructedData.push({ page_no, date, time, group, check_id, datas: formattedDatas });
         }
         
         return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.UP, reconstructedData));
