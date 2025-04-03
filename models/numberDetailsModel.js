@@ -70,6 +70,9 @@ const numberDetailsScheme = mongoose.Schema({
     schedule: { type: String },
 
     // Lottery result field
+    row_id: {
+        type: String,
+    },
     result_post_name: {
         type: String,
     },

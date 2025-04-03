@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const NumberDetail = require("../models/numberDetailsModel");
 const { ResultMessage } = require("../pattern/response/resultMessage");
 const { LOTTERY_TYPE, MESSAGE, CODE } = require("../constants");
+const { v4: uuidv4 } = require('uuid');
 
 
 //@desc Get all number detail
@@ -47,6 +48,7 @@ const createNumberDetail = asyncHandler(async (req, res) => {
             const { column_no, main_row } = data;
 
             main_row.forEach(rowItem => {
+                const row_id = uuidv4();
                 const { row, post, schedule } = rowItem;
 
                 row.forEach(rowData => {
@@ -61,7 +63,8 @@ const createNumberDetail = asyncHandler(async (req, res) => {
                         amount,
                         currency,
                         post,
-                        schedule
+                        schedule,
+                        row_id
                     };
 
                     dataEntries.push(formattedData);
@@ -71,7 +74,7 @@ const createNumberDetail = asyncHandler(async (req, res) => {
     });
 
     const newDataEntries = await Promise.all(dataEntries.map(async (entry) => {
-        const { page_no, date, time, group, column_no, number, amount, currency, post, schedule } = entry;
+        const { page_no, date, time, group, column_no, number, amount, currency, post, schedule, row_id } = entry;
 
         return await NumberDetail.create({
             type: LOTTERY_TYPE.LOTTERY_NUMBER,
@@ -84,7 +87,8 @@ const createNumberDetail = asyncHandler(async (req, res) => {
             amount,
             currency,
             post,
-            schedule
+            schedule,
+            row_id
         });
     }));
     res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, newDataEntries));
@@ -190,7 +194,7 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
 
         // Process each entry from numberDetails
         numberDetails.forEach(entry => {
-            const { page_no, date, time, group, column_no, number, amount, currency, post, schedule, type, _id } = entry;
+            const { page_no, date, time, group, column_no, number, amount, currency, post, schedule, type, _id, row_id } = entry;
 
             const key = `${page_no}|${date}|${time}|${group}`;
             if (!grouped[key]) {
@@ -201,9 +205,9 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
                 grouped[key].datas[column_no] = { column_no, main_row: {} };
             }
 
-            const postKey = `${post}|${schedule}`;
+            const postKey = `${post}|${schedule}|${row_id}`;
             if (!grouped[key].datas[column_no].main_row[postKey]) {
-                grouped[key].datas[column_no].main_row[postKey] = { post, schedule, row: [] };
+                grouped[key].datas[column_no].main_row[postKey] = { post, schedule, row_id, row: [] };
             }
 
             // Add the primary row data
