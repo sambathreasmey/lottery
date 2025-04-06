@@ -176,7 +176,7 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
         const numberDetails = await NumberDetail.find(query).exec();
 
         // Collect all the _id values from numberDetails to query for related entries in a single request
-        const idsToCheck = numberDetails.map(entry => entry._id);
+        const idsToCheck = numberDetails.map(entry => entry.row_id);
 
         // Fetch all related numberDetailsCheck in one query
         const numberDetailsCheckList = await NumberDetail.find({
@@ -214,7 +214,7 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
             grouped[key].datas[column_no].main_row[postKey].row.push({ number, amount, currency, type, _id });
 
             // Check if there are related numberDetailsCheck for this entry
-            const numberDetailsCheck = checkDetailsMap[_id];
+            const numberDetailsCheck = checkDetailsMap[row_id];
             if (numberDetailsCheck) { // Check if there are any results
                 const { check_id, type, check_amount } = numberDetailsCheck;
                 grouped[key].datas[column_no].main_row[postKey].row.push({ number: '', amount: '', currency, check_id, type, check_amount });
