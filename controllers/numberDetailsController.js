@@ -175,7 +175,7 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
         // Find numberDetails based on the query
         const numberDetails = await NumberDetail.find(query).exec();
 
-        // Collect all the _id values from numberDetails to query for related entries in a single request
+        // Collect all the row_id values from numberDetails to query for related entries in a single request
         const idsToCheck = numberDetails.map(entry => entry.row_id);
 
         // Fetch all related numberDetailsCheck in one query
@@ -186,7 +186,8 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
 
         // Create a lookup map for the check details, keyed by check_id
         const checkDetailsMap = numberDetailsCheckList.reduce((acc, entry) => {
-            acc[entry.check_id] = entry;
+            if (!acc[entry.check_id]) acc[entry.check_id] = [];
+            acc[entry.check_id].push(entry);  // Save all check entries per check_id
             return acc;
         }, {});
 
@@ -214,10 +215,27 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
             grouped[key].datas[column_no].main_row[postKey].row.push({ number, amount, currency, type, _id });
 
             // Check if there are related numberDetailsCheck for this entry
-            const numberDetailsCheck = checkDetailsMap[row_id];
-            if (numberDetailsCheck) { // Check if there are any results
-                const { check_id, type, check_amount } = numberDetailsCheck;
-                grouped[key].datas[column_no].main_row[postKey].row.push({ number: '', amount: '', currency, check_id, type, check_amount });
+            const numberDetailsCheckList = checkDetailsMap[row_id];
+            if (numberDetailsCheckList) {
+                // Avoid duplicate checks (same check_id should not appear twice for the same row)
+                numberDetailsCheckList.forEach(numberDetailsCheck => {
+                    const { check_id, type, check_amount } = numberDetailsCheck;
+                    // Check if this specific check_id and check_amount combination has already been added
+                    const existingCheck = grouped[key].datas[column_no].main_row[postKey].row.some(
+                        row => row.check_id === check_id && row.check_amount === check_amount
+                    );
+                    
+                    if (!existingCheck) {
+                        grouped[key].datas[column_no].main_row[postKey].row.push({
+                            number: '',
+                            amount: '',
+                            currency,
+                            check_id,
+                            type,
+                            check_amount
+                        });
+                    }
+                });
             }
         });
 
@@ -231,12 +249,14 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
             return { page_no, date, time, group, datas: formattedDatas };
         });
 
+        // Send the final result
         return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, reconstructedData));
+
     } catch (error) {
+        // Handle any errors and send a response with the error message
         return res.status(500).json(new ResultMessage(CODE.ERROR, MESSAGE.ERROR, error.message));
     }
 });
-
 
 //@desc create compare number detail
 //@route POST /api/number_details/inp_submit
