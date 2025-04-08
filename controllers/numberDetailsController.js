@@ -292,4 +292,30 @@ const createCompareNumberDetail = asyncHandler(async (req, res) => {
     res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, numberDetailResponse));
 });
 
-module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter, createCompareNumberDetail};
+//@desc Delete result number detail
+//@route DELETE /api/number_details/inp_submit/:id
+//@access private
+const deleteCompareNumberDetail = asyncHandler(async (req, res) => {
+
+    try {
+        const numberDetail = await NumberDetail.findOne({ _id: req.params.id, type: LOTTERY_TYPE.LOTTERY_COMPARE});
+        if (!numberDetail) {
+            return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
+        }
+        if (numberDetail.user_id.toString() !== req.user.id) {
+            return res.status(200).json(new ResultMessage(CODE.CREDENTIAL, MESSAGE.CREDENTIAL));
+        }
+    } catch (error) {
+        return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
+    }
+
+    try {
+        const resDel = await NumberDetail.deleteOne({ _id: req.params.id });
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.DELETED, resDel));
+    } catch (error) {
+        return res.status(500).json(new ResultMessage(CODE.GENERAL_EXCEPTION, MESSAGE.GENERAL_EXCEPTION));
+    }
+
+});
+
+module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter, createCompareNumberDetail, deleteCompareNumberDetail};
