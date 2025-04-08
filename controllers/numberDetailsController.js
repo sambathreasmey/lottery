@@ -292,7 +292,7 @@ const createCompareNumberDetail = asyncHandler(async (req, res) => {
     res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, numberDetailResponse));
 });
 
-//@desc Delete result number detail
+//@desc Delete compare number detail
 //@route DELETE /api/number_details/inp_submit/:id
 //@access private
 const deleteCompareNumberDetail = asyncHandler(async (req, res) => {
@@ -318,4 +318,33 @@ const deleteCompareNumberDetail = asyncHandler(async (req, res) => {
 
 });
 
-module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter, createCompareNumberDetail, deleteCompareNumberDetail};
+//@desc Update compare number detail
+//@route PUT /api/number_details/inp_submit/:id
+//@access private
+const updateCompareNumberDetail = asyncHandler(async (req, res) => {
+    try {
+        const numberDetail = await NumberDetail.findOne({ _id: req.params.id, type: LOTTERY_TYPE.LOTTERY_COMPARE});
+        if (!numberDetail) {
+            return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
+        }
+        if (numberDetail.user_id.toString() !== req.user.id) {
+            return res.status(200).json(new ResultMessage(CODE.CREDENTIAL, MESSAGE.CREDENTIAL));
+        }
+    } catch (error) {
+        return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
+    }
+
+    try {
+        const updateRes = await NumberDetail.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, updateRes));
+    } catch (error) {
+        res.status(500).json({ code: CODE.GENERAL_EXCEPTION, message: MESSAGE.GENERAL_EXCEPTION });
+    }
+});
+
+module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter, createCompareNumberDetail, deleteCompareNumberDetail, updateCompareNumberDetail};
