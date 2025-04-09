@@ -219,7 +219,7 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
             if (numberDetailsCheckList) {
                 // Avoid duplicate checks (same check_id should not appear twice for the same row)
                 numberDetailsCheckList.forEach(numberDetailsCheck => {
-                    const { check_id, type, check_amount } = numberDetailsCheck;
+                    const { check_id, type, check_amount, _id } = numberDetailsCheck;
                     // Check if this specific check_id and check_amount combination has already been added
                     const existingCheck = grouped[key].datas[column_no].main_row[postKey].row.some(
                         row => row.check_id === check_id && row.check_amount === check_amount
@@ -232,7 +232,8 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
                             currency,
                             check_id,
                             type,
-                            check_amount
+                            check_amount,
+                            _id
                         });
                     }
                 });
