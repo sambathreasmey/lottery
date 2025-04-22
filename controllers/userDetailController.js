@@ -3,6 +3,8 @@ const UserDetail = require("../models/userDetailModel");
 const { ResultMessage } = require("../pattern/response/resultMessage");
 const { MESSAGE, CODE, USER_TYPE } = require("../constants");
 const { Util } = require("../util");
+const LoginSession = require("../models/loginSessionModel");
+const { v4: uuidv4 } = require('uuid');
 
 //@desc Get all user details
 //@route GET /api/user_detail
@@ -131,14 +133,24 @@ const deleteUserDetail = asyncHandler(async (req, res) => {
 //@route POST /api/user_detail/login
 //@access private
 const login = asyncHandler(async (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
+    const { username, password , ip, location} = req.body;
+    if (!username || !password || !ip || !location) {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
 
     const userDetail = await UserDetail.findOne({ username: username });
     //compare password with hashed password
     if (userDetail && password == userDetail.password) {
+        const loginSession = await LoginSession.create(
+            {
+                username: username,
+                user_id: userDetail._id,
+                login_id: uuidv4(),
+                ip: ip,
+                location: location,
+                user_id: req.user.id
+            }
+        );
         user = {
             "_id": userDetail._id,
             "username": userDetail.username,
@@ -147,6 +159,7 @@ const login = asyncHandler(async (req, res) => {
             "address": userDetail.address,
             "login_on": new Util().getCurrentTime().formattedDate,
             "time_out": 43200,
+            "login_id": loginSession.login_id
         }
         res.status(200).json({ code: CODE.SUCCESS, message: MESSAGE.LOGINED, user });
     } else {
