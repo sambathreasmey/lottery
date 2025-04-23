@@ -23,7 +23,18 @@ const getUserDetailById = asyncHandler(async (req, res) => {
         if (!userDetail) {
             return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
         }
-        return res.status(200).json(new ResultMessage(CODE.SUCCESS, 'success', userDetail));
+        const latestSession = await LoginSession.findOne({ user_id })
+          .sort({ createdAt: -1 }) // sort by createdAt in descending order
+          .exec();
+        response = {
+            "_id": userDetail._id,
+            "username": userDetail.username,
+            "phone_number": userDetail.phone_number,
+            "email_address": userDetail.email_address,
+            "address": userDetail.address,
+            "login_id": latestSession.login_id
+        }
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, 'success', response));
     } catch (error) {
         return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
     }
