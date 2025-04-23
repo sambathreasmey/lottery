@@ -36,6 +36,7 @@ const getUserDetailById = asyncHandler(async (req, res) => {
         }
         return res.status(200).json(new ResultMessage(CODE.SUCCESS, 'success', response));
     } catch (error) {
+        console.log(error);
         return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
     }
 });
