@@ -23,9 +23,10 @@ const getUserDetailById = asyncHandler(async (req, res) => {
         if (!userDetail) {
             return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
         }
-        const latestSession = await LoginSession.findOne({ user_id: userDetail._id })
+        const latestSession = await LoginSession.findOne({ username: userDetail.username })
           .sort({ createdAt: -1 }) // sort by createdAt in descending order
           .exec();
+        console.log(latestSession);
         response = {
             "_id": userDetail._id,
             "username": userDetail.username,
