@@ -153,7 +153,6 @@ const updateNumberDetail = asyncHandler(async (req, res) => {
 //@route POST /api/number_details/inp_check
 //@access private
 const inputCheckNumberFilter = asyncHandler(async (req, res) => {
-    console.log(req.body);
     const { schedule, date, group, page_no } = req.body;
 
     // Build the query object based on provided filters
@@ -348,4 +347,44 @@ const updateCompareNumberDetail = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter, createCompareNumberDetail, deleteCompareNumberDetail, updateCompareNumberDetail};
+//@desc get page by date and group
+//@route PUT /api/number_details/get_page_by_date_and_group
+//@access private
+const getPageByDateAndGroup = asyncHandler(async (req, res) => {
+    try {
+        const { date, group } = req.body;
+        const query = {};
+        if (date) {
+            query.date = date;
+        }
+        if (group) {
+            query.group = group;
+        }
+
+        const lastPage = await NumberDetail
+            .findOne(query)
+            .sort({ page_no: -1 }) // Sort descending by page_no
+            .select('page_no') // Only select page_no field
+            .lean(); // Faster read-only query
+
+        const pageNo = lastPage ? lastPage.page_no : null;
+
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, pageNo));
+    } catch (error) {
+        return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
+    }
+});
+
+
+module.exports = { 
+    getAllNumberDetail,
+    getNumberDetailById,
+    createNumberDetail,
+    deleteNumberDetail,
+    updateNumberDetail,
+    inputCheckNumberFilter,
+    createCompareNumberDetail,
+    deleteCompareNumberDetail,
+    updateCompareNumberDetail,
+    getPageByDateAndGroup
+};

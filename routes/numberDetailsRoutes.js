@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const validateToken = require("../middleware/validateTokenHandler");
-const { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter, createCompareNumberDetail, deleteCompareNumberDetail, updateCompareNumberDetail } = require("../controllers/numberDetailsController");
+const { getAllNumberDetail, getNumberDetailById, createNumberDetail, deleteNumberDetail, updateNumberDetail, inputCheckNumberFilter, createCompareNumberDetail, deleteCompareNumberDetail, updateCompareNumberDetail, getPageByDateAndGroup } = require("../controllers/numberDetailsController");
 
 router.use(validateToken);
 router.route("/").get(getAllNumberDetail);
@@ -13,5 +13,6 @@ router.route("/inp_check").post(inputCheckNumberFilter);
 router.route("/inp_check_submit").post(createCompareNumberDetail);
 router.route("/inp_check/:id").delete(deleteCompareNumberDetail);
 router.route("/inp_check/:id").put(updateCompareNumberDetail);
+router.route("/get_page_by_date_and_group").post(getPageByDateAndGroup);
 
 module.exports = router;
