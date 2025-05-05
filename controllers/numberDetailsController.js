@@ -52,7 +52,7 @@ const createNumberDetail = asyncHandler(async (req, res) => {
                 const { row, post, schedule } = rowItem;
 
                 row.forEach(rowData => {
-                    const { number, amount, currency } = rowData;
+                    const { number, amount, currency, type } = rowData;
                     const formattedData = {
                         page_no,
                         date,
@@ -62,6 +62,7 @@ const createNumberDetail = asyncHandler(async (req, res) => {
                         number,
                         amount,
                         currency,
+                        type,
                         post,
                         schedule,
                         row_id
@@ -74,10 +75,11 @@ const createNumberDetail = asyncHandler(async (req, res) => {
     });
 
     const newDataEntries = await Promise.all(dataEntries.map(async (entry) => {
-        const { page_no, date, time, group, column_no, number, amount, currency, post, schedule, row_id } = entry;
+        const { page_no, date, time, group, column_no, number, amount, currency, type, post, schedule, row_id } = entry;
 
         return await NumberDetail.create({
-            type: LOTTERY_TYPE.LOTTERY_NUMBER,
+            // type: LOTTERY_TYPE.LOTTERY_NUMBER,
+            type,
             page_no,
             date,
             time,
