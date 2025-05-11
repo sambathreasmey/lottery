@@ -12,6 +12,7 @@ const getAllPermissionDetail = asyncHandler(async (req, res) => {
         permissionDetail.map(permission => ({
             _id: permission._id,
             username: permission.username,
+            role: permission.role,
             input_lottery_menu: permission.input_lottery_menu,
             input_lottery_permission: permission.input_lottery_permission,
             compare_lottery_menu: permission.compare_lottery_menu,
@@ -35,6 +36,7 @@ const getPermissionDetailById = asyncHandler(async (req, res) => {
             {
                 _id: permissionDetail._id,
                 username: permissionDetail.username,
+                role: permissionDetail.role,
                 input_lottery_menu: permissionDetail.input_lottery_menu,
                 input_lottery_permission: permissionDetail.input_lottery_permission,
                 compare_lottery_menu: permissionDetail.compare_lottery_menu,
