@@ -33,7 +33,8 @@ const getUserDetailById = asyncHandler(async (req, res) => {
             "phone_number": userDetail.phone_number,
             "email_address": userDetail.email_address,
             "address": userDetail.address,
-            "login_id": latestSession.login_id
+            "login_id": latestSession.login_id,
+            "role": userDetail.role
         }
         return res.status(200).json(new ResultMessage(CODE.SUCCESS, 'success', response));
     } catch (error) {
