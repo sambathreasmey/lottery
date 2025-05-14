@@ -96,6 +96,53 @@ const createNumberDetail = asyncHandler(async (req, res) => {
     res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, newDataEntries));
 });
 
+//@desc create number detail
+//@route POST /api/number_detail
+//@access private
+const createNumberDetailV2 = asyncHandler(async (req, res) => {
+    const dataEntries = [];
+
+    req.body.forEach(item => {
+        const {
+            page_no,
+            date,
+            time,
+            group,
+            column_no,
+            number,
+            amount,
+            currency,
+            type,
+            post,
+            schedule,
+            row_id
+        } = item;
+
+        dataEntries.push({
+            page_no,
+            date,
+            time,
+            group,
+            column_no,
+            number,
+            amount,
+            currency,
+            type,
+            post,
+            schedule,
+            row_id
+        });
+    });
+
+    const newDataEntries = await Promise.all(
+        dataEntries.map(async (entry) => {
+            return await NumberDetail.create(entry);
+        })
+    );
+
+    res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.INSERTED, newDataEntries));
+});
+
 //@desc Delete number detail
 //@route DELETE /api/number_detail/:id
 //@access private
@@ -260,6 +307,40 @@ const inputCheckNumberFilter = asyncHandler(async (req, res) => {
     }
 });
 
+//@desc POST number details filtered by schedule, date, group, and page number
+//@route POST /api/number_details/inp_check
+//@access private
+const inputCheckNumberFilterV2 = asyncHandler(async (req, res) => {
+    const { schedule, date, group, page_no } = req.body;
+
+    // Build the query object based on provided filters
+    const query = {};
+    if (schedule) {
+        query.schedule = schedule;
+    }
+    if (date) {
+        query.date = date;
+    }
+    if (group) {
+        query.group = group;
+    }
+    if (page_no) {
+        query.page_no = page_no;
+    }
+
+    try {
+        // Find numberDetails based on the query
+        const numberDetails = await NumberDetail.find(query).exec();
+
+        // Send the final result
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, numberDetails));
+
+    } catch (error) {
+        // Handle any errors and send a response with the error message
+        return res.status(500).json(new ResultMessage(CODE.ERROR, MESSAGE.ERROR, error.message));
+    }
+});
+
 //@desc create compare number detail
 //@route POST /api/number_details/inp_submit
 //@access private
@@ -388,5 +469,7 @@ module.exports = {
     createCompareNumberDetail,
     deleteCompareNumberDetail,
     updateCompareNumberDetail,
-    getPageByDateAndGroup
+    getPageByDateAndGroup,
+    createNumberDetailV2,
+    inputCheckNumberFilterV2
 };
