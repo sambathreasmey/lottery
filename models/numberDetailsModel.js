@@ -63,7 +63,7 @@ const numberDetailsScheme = mongoose.Schema({
     time: { type: String },
     group: { type: String },
     column_no: { type: Number },
-    number: { type: Number },
+    number: { type: String },
     amount: { type: Number },
     currency: { type: String },
     post: { type: String },

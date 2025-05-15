@@ -130,7 +130,8 @@ const createNumberDetailV2 = asyncHandler(async (req, res) => {
             type,
             post,
             schedule,
-            row_id
+            row_id,
+            user_id: req.user.id
         });
     });
 
@@ -458,6 +459,63 @@ const getPageByDateAndGroup = asyncHandler(async (req, res) => {
     }
 });
 
+//@desc Update number detail
+//@route PUT /api/number_detail/update/:id
+//@access private
+const updateNumberDetailV2 = asyncHandler(async (req, res) => {
+    try {
+        const id = req.params.id;
+        console.log("Requested ID:", id);
+
+        const numberDetail = await NumberDetail.findById(id);
+        if (!numberDetail) {
+            return res.status(404).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
+        }
+
+        if (numberDetail.user_id.toString() !== req.user.id) {
+            return res.status(200).json(new ResultMessage(CODE.CREDENTIAL, MESSAGE.CREDENTIAL));
+        }
+
+        const updateRes = await NumberDetail.findByIdAndUpdate(
+            id,
+            req.body,
+            { new: true }
+        );
+
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, updateRes));
+    } catch (error) {
+        console.error("Update error:", error);
+        return res.status(500).json(new ResultMessage(CODE.GENERAL_EXCEPTION, MESSAGE.GENERAL_EXCEPTION));
+    }
+});
+
+//@desc Delete number detail
+//@route DELETE /api/number_detail/delete/:id
+//@access private
+const deleteNumberDetailV2 = asyncHandler(async (req, res) => {
+
+    try {
+        const id = req.params.id;
+        console.log("Requested ID:", id);
+        const numberDetail = await NumberDetail.findById(id);
+        if (!numberDetail) {
+            return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
+        }
+        if (numberDetail.user_id.toString() !== req.user.id) {
+            return res.status(200).json(new ResultMessage(CODE.CREDENTIAL, MESSAGE.CREDENTIAL));
+        }
+    } catch (error) {
+        return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
+    }
+
+    try {
+        const resDel = await NumberDetail.deleteOne({ _id: req.params.id });
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.DELETED, resDel));
+    } catch (error) {
+        return res.status(500).json(new ResultMessage(CODE.GENERAL_EXCEPTION, MESSAGE.GENERAL_EXCEPTION));
+    }
+
+});
 
 module.exports = { 
     getAllNumberDetail,
@@ -471,5 +529,7 @@ module.exports = {
     updateCompareNumberDetail,
     getPageByDateAndGroup,
     createNumberDetailV2,
-    inputCheckNumberFilterV2
+    inputCheckNumberFilterV2,
+    updateNumberDetailV2,
+    deleteNumberDetailV2,
 };
