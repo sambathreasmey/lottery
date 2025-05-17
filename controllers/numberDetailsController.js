@@ -472,7 +472,7 @@ const updateNumberDetailV2 = asyncHandler(async (req, res) => {
             return res.status(404).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
         }
 
-        if (numberDetail.user_id.toString() !== req.user.id) {
+        if (numberDetail.user_id != null && numberDetail.user_id.toString() !== req.user.id) {
             return res.status(200).json(new ResultMessage(CODE.CREDENTIAL, MESSAGE.CREDENTIAL));
         }
 
@@ -501,10 +501,11 @@ const deleteNumberDetailV2 = asyncHandler(async (req, res) => {
         if (!numberDetail) {
             return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
         }
-        if (numberDetail.user_id.toString() !== req.user.id) {
+        if (numberDetail.user_id != null && numberDetail.user_id.toString() !== req.user.id) {
             return res.status(200).json(new ResultMessage(CODE.CREDENTIAL, MESSAGE.CREDENTIAL));
         }
     } catch (error) {
+        console.log(error);
         return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
     }
 
