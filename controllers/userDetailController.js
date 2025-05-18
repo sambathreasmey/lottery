@@ -5,13 +5,31 @@ const { MESSAGE, CODE, USER_TYPE } = require("../constants");
 const { Util } = require("../util");
 const LoginSession = require("../models/loginSessionModel");
 const { v4: uuidv4 } = require('uuid');
+const { response } = require("express");
 
 //@desc Get all user details
 //@route GET /api/user_detail
 //@access private
 const getUserDetail = asyncHandler(async (req, res) => {
     const userDetail = await UserDetail.find();
-    return res.status(200).json(new ResultMessage(CODE.SUCCESS, 'success', userDetail));
+    const response = userDetail.map(user => {
+    const userObj = user.toObject(); // convert mongoose doc to plain JS object
+
+    // Extract permission-related keys and values
+    const permission = {};
+    for (const key of Object.keys(userObj)) {
+      if (key.endsWith('_menu') || key.endsWith('_permission')) {
+        permission[key] = userObj[key];
+        delete userObj[key]; // remove from top-level user object
+      }
+    }
+
+    // Add the grouped permission object
+    userObj.permission = permission;
+
+    return userObj;
+  });
+    return res.status(200).json(new ResultMessage(CODE.SUCCESS, 'success', response));
 });
 
 //@desc Get by id user detail
@@ -19,21 +37,27 @@ const getUserDetail = asyncHandler(async (req, res) => {
 //@access private
 const getUserDetailById = asyncHandler(async (req, res) => {
     try {
-        const userDetail = await UserDetail.findOne({ _id: req.params.id });
+        const id = req.params.id;
+        console.log("Requested ID:", id);
+        const login_id = "";
+        
+        const userDetail = await UserDetail.findById(id);
         if (!userDetail) {
             return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
         }
         const latestSession = await LoginSession.findOne({ username: userDetail.username })
           .sort({ createdAt: -1 }) // sort by createdAt in descending order
           .exec();
-        console.log(latestSession);
+        if  (latestSession) {
+            login_id = latestSession.login_id;
+        }
         response = {
             "_id": userDetail._id,
             "username": userDetail.username,
             "phone_number": userDetail.phone_number,
             "email_address": userDetail.email_address,
             "address": userDetail.address,
-            "login_id": latestSession.login_id,
+            "login_id": login_id,
             "role": userDetail.role
         }
         return res.status(200).json(new ResultMessage(CODE.SUCCESS, 'success', response));
@@ -79,12 +103,24 @@ const createUserDetail = asyncHandler(async (req, res) => {
             role: role,
             status: status,
             // permission setting
+            agent_menu: 0,
+            agent_permission: 0,
+            post_time_menu: 0,
+            post_time_permission: 0,
             input_lottery_menu: 0,
             input_lottery_permission: 0,
-            compare_lottery_menu: 0,
-            compare_lottery_permission: 0,
+            verify_lottery_menu: 0,
+            verify_lottery_permission: 0,
             result_lottery_menu: 0,
             result_lottery_permission: 0,
+            sum_enter_menu: 0,
+            sum_enter_permission: 0,
+            win_number_menu: 0,
+            win_number_permission: 0,
+            user_manage_menu: 0,
+            user_manage_permission: 0,
+            report_menu: 0,
+            report_permission: 0,
             user_id: req.user.id
         }
     );
