@@ -42,6 +42,7 @@ const getUserDetailById = asyncHandler(async (req, res) => {
         const login_id = "";
         
         const userDetail = await UserDetail.findById(id);
+        console.log(userDetail);
         if (!userDetail) {
             return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
         }
@@ -51,7 +52,7 @@ const getUserDetailById = asyncHandler(async (req, res) => {
         if  (latestSession) {
             login_id = latestSession.login_id;
         }
-        response = {
+        const response = {
             "_id": userDetail._id,
             "username": userDetail.username,
             "phone_number": userDetail.phone_number,
