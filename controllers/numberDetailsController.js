@@ -115,7 +115,8 @@ const createNumberDetailV2 = asyncHandler(async (req, res) => {
             type,
             post,
             schedule,
-            row_id
+            row_id,
+            row_no
         } = item;
 
         dataEntries.push({
@@ -131,6 +132,7 @@ const createNumberDetailV2 = asyncHandler(async (req, res) => {
             post,
             schedule,
             row_id,
+            row_no,
             user_id: req.user.id
         });
     });
