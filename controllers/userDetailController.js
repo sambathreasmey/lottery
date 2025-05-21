@@ -39,10 +39,9 @@ const getUserDetailById = asyncHandler(async (req, res) => {
     try {
         const id = req.params.id;
         console.log("Requested ID:", id);
-        const login_id = "";
+        let login_id = "";
         
         const userDetail = await UserDetail.findById(id);
-        console.log(userDetail);
         if (!userDetail) {
             return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
         }
