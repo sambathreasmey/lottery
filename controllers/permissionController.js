@@ -32,18 +32,18 @@ const getPermissionDetailById = asyncHandler(async (req, res) => {
         if (!permissionDetail) {
             return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
         }
-        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS,
-            {
-                _id: permissionDetail._id,
-                username: permissionDetail.username,
-                role: permissionDetail.role,
-                input_lottery_menu: permissionDetail.input_lottery_menu,
-                input_lottery_permission: permissionDetail.input_lottery_permission,
-                compare_lottery_menu: permissionDetail.compare_lottery_menu,
-                compare_lottery_permission: permissionDetail.compare_lottery_permission,
-                result_lottery_menu: permissionDetail.result_lottery_menu,
-                result_lottery_permission: permissionDetail.result_lottery_permission,
-            }
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, permissionDetail
+            // {
+            //     _id: permissionDetail._id,
+            //     username: permissionDetail.username,
+            //     role: permissionDetail.role,
+            //     input_lottery_menu: permissionDetail.input_lottery_menu,
+            //     input_lottery_permission: permissionDetail.input_lottery_permission,
+            //     compare_lottery_menu: permissionDetail.compare_lottery_menu,
+            //     compare_lottery_permission: permissionDetail.compare_lottery_permission,
+            //     result_lottery_menu: permissionDetail.result_lottery_menu,
+            //     result_lottery_permission: permissionDetail.result_lottery_permission,
+            // }
         ));
     } catch (error) {
         return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
