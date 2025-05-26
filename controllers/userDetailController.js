@@ -131,6 +131,7 @@ const createUserDetail = asyncHandler(async (req, res) => {
 //@route PUT /api/user_detail
 //@access private
 const updateUserDetail = asyncHandler(async (req, res) => {
+    console.log(req.body);
     try {
         const userDetail = await UserDetail.findById({ _id: req.params.id });
         if (!userDetail) {
