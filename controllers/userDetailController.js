@@ -137,9 +137,9 @@ const updateUserDetail = asyncHandler(async (req, res) => {
         if (!userDetail) {
             return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
         }
-        if (userDetail.user_id.toString() !== req.user.id) {
-            return res.status(CODE.CREDENTIAL).json(new ResultMessage(CODE.CREDENTIAL, MESSAGE.CREDENTIAL));
-        }
+        // if (userDetail.user_id.toString() !== req.user.id) {
+        //     return res.status(CODE.CREDENTIAL).json(new ResultMessage(CODE.CREDENTIAL, MESSAGE.CREDENTIAL));
+        // }
     } catch (error) {
         return res.status(200).json(new ResultMessage(CODE.NOT_FOUND, MESSAGE.NOT_FOUND));
     }
