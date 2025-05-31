@@ -58,7 +58,27 @@ const getUserDetailById = asyncHandler(async (req, res) => {
             "email_address": userDetail.email_address,
             "address": userDetail.address,
             "login_id": login_id,
-            "role": userDetail.role
+            "role": userDetail.role,
+            "permission": {
+                agent_menu: userDetail.agent_menu,
+                agent_permission: userDetail.agent_permission,
+                post_time_menu: userDetail.post_time_menu,
+                post_time_permission: userDetail.post_time_permission,
+                input_lottery_menu: userDetail.input_lottery_menu,
+                input_lottery_permission: userDetail.input_lottery_permission,
+                verify_lottery_menu: userDetail.verify_lottery_menu,
+                verify_lottery_permission: userDetail.verify_lottery_permission,
+                result_lottery_menu: userDetail.result_lottery_menu,
+                result_lottery_permission: userDetail.result_lottery_permission,
+                sum_enter_menu: userDetail.sum_enter_menu,
+                sum_enter_permission: userDetail.sum_enter_permission,
+                win_number_menu: userDetail.win_number_menu,
+                win_number_permission: userDetail.win_number_permission,
+                user_manage_menu: userDetail.user_manage_menu,
+                user_manage_permission: userDetail.user_manage_permission,
+                report_menu: userDetail.report_menu,
+                report_permission: userDetail.report_permission
+            }
         }
         return res.status(200).json(new ResultMessage(CODE.SUCCESS, 'success', response));
     } catch (error) {
