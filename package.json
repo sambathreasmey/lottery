@@ -19,9 +19,9 @@
     "express": "^4.21.1",
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.8.3",
+    "mongoose": "^8.15.1",
     "node-cron": "^3.0.3",
-    "node-telegram-bot-api": "^0.63.0",
+    "node-telegram-bot-api": "^0.66.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
