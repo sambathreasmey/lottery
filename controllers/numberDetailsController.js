@@ -12,10 +12,10 @@ const getAllNumberDetail = asyncHandler(async (req, res) => {
     const numberDetail = await NumberDetail.find({ type: LOTTERY_TYPE.LOTTERY_NUMBER});
 
     //DEV ONLY delete all
-    // numberDetail.forEach(async num => {
-    //     console.log(num._id);
-    //     const resDel = await NumberDetail.deleteOne({ _id: num._id });
-    // });
+    numberDetail.forEach(async num => {
+        console.log(num._id);
+        const resDel = await NumberDetail.deleteOne({ _id: num._id });
+    });
 
     return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, numberDetail));
 });
@@ -116,7 +116,8 @@ const createNumberDetailV2 = asyncHandler(async (req, res) => {
             post,
             schedule,
             row_id,
-            row_no
+            row_no,
+            column_check_id
         } = item;
 
         dataEntries.push({
@@ -133,6 +134,7 @@ const createNumberDetailV2 = asyncHandler(async (req, res) => {
             schedule,
             row_id,
             row_no,
+            column_check_id,
             user_id: req.user.id
         });
     });

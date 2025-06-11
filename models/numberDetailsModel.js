@@ -95,7 +95,7 @@ const numberDetailsScheme = mongoose.Schema({
 
     // Lottery compare
     check_amount: { type: Number },
-    check_id: { type: String },
+    column_check_id: { type: String },
 },
     {
         timestamps: true,
