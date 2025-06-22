@@ -114,5 +114,31 @@ const updateResultNumberDetail = asyncHandler(async (req, res) => {
     }
 });
 
+//@desc POST result number details filtered by date
+//@route POST /api/result_number_detail/fetch_by_date
+//@access private
+const fetchByDate = asyncHandler(async (req, res) => {
+    const { date } = req.body;
+    if (!date) {
+        return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
+    }
+    const query = {};
+    query.result_date = date;
 
-module.exports = { getAllResultNumberDetail, getResultNumberDetailById, createResultNumberDetail, deleteResultNumberDetail, updateResultNumberDetail };
+    try {
+        // Find numberDetails based on the query
+        const numberDetails = await NumberDetail.find(query)
+            .select('_id type result_post_name result_post_type result_date result_lottery_2number result_lottery_3number result_lottery_4number createdAt updatedAt')
+            .exec();
+
+        // Send the final result
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, numberDetails));
+
+    } catch (error) {
+        // Handle any errors and send a response with the error message
+        return res.status(500).json(new ResultMessage(CODE.ERROR, MESSAGE.ERROR, error.message));
+    }
+});
+
+
+module.exports = { getAllResultNumberDetail, getResultNumberDetailById, createResultNumberDetail, deleteResultNumberDetail, updateResultNumberDetail, fetchByDate };
