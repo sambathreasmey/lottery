@@ -1,10 +1,8 @@
 const express = require("express");
 const cors = require('cors');
-const errorHandler = require("./middleware/errorHandler");
-const connectDb = require("./config/dbConnection");
-const dotenv = require("dotenv").config();
-// const TelegramBot = require('node-telegram-bot-api');
-// const cron = require('node-cron');
+const errorHandler = require("./app/middleware/errorHandler");
+const connectDb = require("./app/config/dbConnection");
+require("dotenv").config();
 
 connectDb();
 const app = express();
@@ -14,47 +12,16 @@ app.use(express.json());
 app.use(cors());
 
 
-// // Initialize the Telegram bot
-// const TOKEN = process.env.TELEGRAM_BOT_TOKEN; // Add your Telegram bot token to .env
-// const bot = new TelegramBot(TOKEN, { polling: true });
-
-// // Telegram Bot Commands
-// bot.onText(/\/start/, (msg) => {
-//     const chatId = msg.chat.id;
-//     bot.sendMessage(chatId, 'Welcome to the bot! Use /help to see available commands.');
-// });
-
-// bot.onText(/\/help/, (msg) => {
-//     const chatId = msg.chat.id;
-//     bot.sendMessage(chatId, 'Available commands:\n/start - Start the bot\n/help - List commands');
-// });
-
-// bot.onText(/\/schedule/, (msg) => {
-//     const chatId = msg.chat.id;
-//     bot.sendMessage(chatId, 'Scheduling a task every 1 minutes.');
-
-//     // Schedule a task to run every 15 minutes
-//     var i = 1;
-//     cron.schedule('*/59 * * * * *', () => {
-//         try {
-//             bot.sendMessage(chatId, i);
-//             i++;
-//         } catch (error) {
-//             console.error('Error sending message:', error);
-//         }
-//     });
-// });
-
-
-app.use("/api/users", require("./routes/system/userRoutes"));
-app.use("/api/user_detail", require("./routes/userDetailRoutes"));
-app.use("/api/group_member", require("./routes/groupMemberRoutes"));
-app.use("/api/number_detail", require("./routes/numberDetailsRoutes"));
-app.use("/api/result_number_detail", require("./routes/resultNumberDetailsRoutes"));
-app.use("/api/post_category_detail", require("./routes/postCategoryRoutes"));
-app.use("/api/post_sub_category_detail", require("./routes/postSubCategoryRoutes"));
-app.use("/api/permission", require("./routes/permissionRoutes"));
-app.use("/api/shortcut", require("./routes/shortcutRoutes"));
+app.use("/api/users", require("./app/gateway/routes/userRoutes"));
+app.use("/api/user_detail", require("./feature/user/userDetailRoutes"));
+app.use("/api/group_member", require("./feature/group/groupMemberRoutes"));
+app.use("/api/number_detail", require("./feature/number/numberDetailsRoutes"));
+app.use("/api/result_number_detail", require("./feature/number/resultNumberDetailsRoutes"));
+app.use("/api/post_category_detail", require("./feature/post/postCategoryRoutes"));
+app.use("/api/post_sub_category_detail", require("./feature/post/postSubCategoryRoutes"));
+app.use("/api/permission", require("./feature/permission/permissionRoutes"));
+app.use("/api/shortcut", require("./feature/shortcut/shortcutRoutes"));
+app.use("/api/report", require("./feature/report/reportRoutes"));
 app.use(errorHandler);
 
 app.listen(port, () => {
