@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const UserDetail = require("./model/userDetailModel");
 const { ResultMessage } = require("../../app/pattern/response/resultMessage");
 const { MESSAGE, CODE, USER_TYPE } = require("../../app/constant/constants");
-const { Util } = require("../../app/util/dateUtil");
+const { DateUtil } = require("../../app/util/dateUtil");
 const LoginSession = require("./model/loginSessionModel");
 const { v4: uuidv4 } = require('uuid');
 
@@ -233,7 +233,7 @@ const login = asyncHandler(async (req, res) => {
             "phone_number": userDetail.phone_number,
             "email_address": userDetail.email_address,
             "address": userDetail.address,
-            "login_on": new Util().getCurrentTime().formattedDate,
+            "login_on": new DateUtil().getCurrentTime().formattedDate,
             "time_out": 43200,
             "login_id": loginSession.login_id
         }
