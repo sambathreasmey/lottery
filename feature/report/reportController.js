@@ -9,7 +9,7 @@ const { v4: uuidv4 } = require('uuid');
 //@route POST /api/report/fetch
 //@access private
 const getReport = asyncHandler(async (req, res) => {
-    const { start_date, end_date, group } = req.body;
+    const { start_date, end_date, group, type } = req.body;
     
     // Check if the dates are valid and convert them to Date objects
     const startDate = new Date(start_date);
@@ -29,19 +29,55 @@ const getReport = asyncHandler(async (req, res) => {
     };
 
     if (group) {
-        filter.group = group; // Optional filter by group
+        filter.group = group;
     }
 
-    // Aggregate the report data, grouping by user_id
+    if (type) {
+        filter.type = type;
+    }
+
     const reportData = await NumberDetail.aggregate([
         {
-            $match: filter // Apply filters
+            $match: filter
         },
         {
             $group: {
-                _id: "$user_id", // Group by user_id
-                total_page: { $sum: "$page_no" }, // Sum of page_no for each user
-                total_number: { $sum: "$_id" } // Sum of _id for each user
+                _id: "$user_id",
+                total_page: { $addToSet: "$page_no" }, // Unique page_no
+                total_number: { $sum: 1 }              // Count docs        
+            }
+        },
+        {
+            $project: {
+                total_page: { $size: "$total_page" },  // Count unique page_no
+                total_number: 1
+            }
+        },
+        {
+            $addFields: {
+                user_id_obj: { $toObjectId: "$_id" }   // Convert _id to ObjectId
+            }
+        },
+        {
+            $lookup: {
+                from: "ltr_user_details",              // Make sure this is the correct collection name
+                localField: "user_id_obj",             // ✅ Use the converted ObjectId here
+                foreignField: "_id",                   // Join on _id in ltr_user_details
+                as: "userInfo"
+            }
+        },
+        {
+            $unwind: {
+                path: "$userInfo",
+                preserveNullAndEmptyArrays: true       // Keep even if no match
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                username: "$userInfo.username",         // ✅ Add username
+                total_page: 1,
+                total_number: 1
             }
         }
     ]);

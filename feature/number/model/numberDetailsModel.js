@@ -12,7 +12,7 @@ const numberDetailsScheme = mongoose.Schema({
         // required: [true, "The post_name is required!"],
     },
     page_no: { type: Number },
-    date: { type: String },
+    date: { type: Date },
     time: { type: String },
     group: { type: String },
     column_no: { type: Number },
