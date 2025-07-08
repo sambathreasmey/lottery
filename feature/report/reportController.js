@@ -82,7 +82,13 @@ const getReport = asyncHandler(async (req, res) => {
         }
     ]);
 
-    return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, reportData));
+    // Add `no` field
+    const reportWithNo = reportData.map((item, index) => ({
+        no: index + 1, // Start from 1
+        ...item
+    }));
+
+    return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, reportWithNo));
 });
 
 module.exports = { 
