@@ -86,6 +86,7 @@ const getReport = asyncHandler(async (req, res) => {
     const reportWithNo = reportData.map((item, index) => ({
         no: index + 1, // Start from 1
         ...item,
+        income_per_1k: 1,
         salary: item.total_number/1000
     }));
 
