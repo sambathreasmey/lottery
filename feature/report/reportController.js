@@ -36,8 +36,9 @@ const getReport = asyncHandler(async (req, res) => {
         filter.type = type;
     }
 
+    var income_per_1k_select = 1;
     if (income_per_1k) {
-        income_per_1k = 1;
+        income_per_1k_select = income_per_1k;
     }
 
     const reportData = await NumberDetail.aggregate([
@@ -90,8 +91,8 @@ const getReport = asyncHandler(async (req, res) => {
     const reportWithNo = reportData.map((item, index) => ({
         no: index + 1, // Start from 1
         ...item,
-        income_per_1k: income_per_1k,
-        salary: (item.total_number/1000) * income_per_1k
+        income_per_1k: income_per_1k_select,
+        salary: (item.total_number/1000) * income_per_1k_select
     }));
 
     return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, reportWithNo));
