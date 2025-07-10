@@ -9,7 +9,7 @@ const { v4: uuidv4 } = require('uuid');
 //@route POST /api/report/fetch
 //@access private
 const getReport = asyncHandler(async (req, res) => {
-    const { start_date, end_date, group, type } = req.body;
+    const { start_date, end_date, group, type, income_per_1k } = req.body;
     
     // Check if the dates are valid and convert them to Date objects
     const startDate = new Date(start_date);
@@ -34,6 +34,10 @@ const getReport = asyncHandler(async (req, res) => {
 
     if (type) {
         filter.type = type;
+    }
+
+    if (income_per_1k) {
+        income_per_1k = 1;
     }
 
     const reportData = await NumberDetail.aggregate([
@@ -86,8 +90,8 @@ const getReport = asyncHandler(async (req, res) => {
     const reportWithNo = reportData.map((item, index) => ({
         no: index + 1, // Start from 1
         ...item,
-        income_per_1k: 1,
-        salary: item.total_number/1000
+        income_per_1k: income_per_1k,
+        salary: (item.total_number/1000) * income_per_1k
     }));
 
     return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, reportWithNo));
