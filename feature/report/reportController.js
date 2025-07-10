@@ -85,7 +85,8 @@ const getReport = asyncHandler(async (req, res) => {
     // Add `no` field
     const reportWithNo = reportData.map((item, index) => ({
         no: index + 1, // Start from 1
-        ...item
+        ...item,
+        salary: item.total_number/1000
     }));
 
     return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, reportWithNo));
