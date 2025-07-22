@@ -22,6 +22,7 @@ const numberDetailsScheme = mongoose.Schema({
     post: { type: String },
     schedule: { type: String },
     row_no: { type: Number },
+    no: { type: Number },
 
     // Lottery result field
     row_id: {

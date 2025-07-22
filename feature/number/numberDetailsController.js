@@ -118,6 +118,7 @@ const createNumberDetailV2 = asyncHandler(async (req, res) => {
             row_id,
             row_no,
             column_check_id,
+            no,
             user_id
         } = item;
 
@@ -136,6 +137,7 @@ const createNumberDetailV2 = asyncHandler(async (req, res) => {
             row_id,
             row_no,
             column_check_id,
+            no,
             user_id,
             area_id: req.user.id
         });

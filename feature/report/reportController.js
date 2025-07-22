@@ -5,6 +5,41 @@ const { LOTTERY_TYPE, MESSAGE, CODE } = require("../../app/constant/constants");
 const { v4: uuidv4 } = require('uuid');
 
 
+
+//@desc Get report
+//@route POST /api/report/fetch
+//@access private
+const getCompareReport = asyncHandler(async (req, res) => {
+    const { schedule, date, group, page_no, type } = req.body;
+    
+    // Build the query object based on provided filters
+    const query = {};
+    if (schedule) {
+        query.schedule = schedule;
+    }
+    if (date) {
+        query.date = date;
+    }
+    if (group) {
+        query.group = group;
+    }
+    if (page_no) {
+        query.page_no = page_no;
+    }
+    if (type) {
+        query.type = type;
+    }
+
+    try {
+        // Find numberDetails based on the query
+        const numberDetails = await NumberDetail.find(query).exec();
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, numberDetails));
+
+    } catch (error) {
+        // Handle any errors and send a response with the error message
+        return res.status(500).json(new ResultMessage(CODE.ERROR, MESSAGE.ERROR, error.message));
+    }
+});
 //@desc Get report
 //@route POST /api/report/fetch
 //@access private
@@ -99,5 +134,6 @@ const getReport = asyncHandler(async (req, res) => {
 });
 
 module.exports = { 
-    getReport
+    getReport,
+    getCompareReport
 };
