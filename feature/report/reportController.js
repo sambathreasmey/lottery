@@ -29,11 +29,22 @@ const getCompareReport = asyncHandler(async (req, res) => {
     if (type) {
         query.type = type;
     }
+    const resultQuery = {};
+    if (date) {
+        resultQuery.data = date;
+    }
+    resultQuery.type = LOTTERY_TYPE.LOTTERY_RESULT;
 
+    let response;
     try {
         // Find numberDetails based on the query
         const numberDetails = await NumberDetail.find(query).exec();
-        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, numberDetails));
+        const resultNumbers = await NumberDetail.find(resultQuery).exec();
+        response = {
+            "number": numberDetails,
+            "result": resultNumbers
+        }
+        return res.status(200).json(new ResultMessage(CODE.SUCCESS, MESSAGE.SUCCESS, response));
 
     } catch (error) {
         // Handle any errors and send a response with the error message
