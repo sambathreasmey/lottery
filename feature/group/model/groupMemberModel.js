@@ -55,6 +55,18 @@ const memberGroupScheme = mongoose.Schema({
         type: String,
         required: [true, "The key is required!"],
     },
+    multi_x2up: {
+        type: String,
+    },
+    multi_x3up: {
+        type: String,
+    },
+    pay_x2up: {
+        type: String,
+    },
+    pay_x3up: {
+        type: String,
+    },
 },
     {
         timestamps: true,

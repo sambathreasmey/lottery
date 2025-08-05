@@ -64,6 +64,7 @@ const getUserDetailById = asyncHandler(async (req, res) => {
             "address": userDetail.address,
             "login_id": login_id,
             "role": userDetail.role,
+            "first_login": userDetail.first_login,
             "permission": {
                 agent_menu: userDetail.agent_menu,
                 agent_permission: userDetail.agent_permission,
@@ -96,8 +97,8 @@ const getUserDetailById = asyncHandler(async (req, res) => {
 //@route POST /api/user_detail
 //@access private
 const createUserDetail = asyncHandler(async (req, res) => {
-    const { username, phone_number, password, email_address, address, role, status } = req.body;
-    if (!username || !phone_number || !password || !email_address || !address || !role || !status) {
+    const { username, phone_number, password, email_address, address, role, status, first_login } = req.body;
+    if (!username || !phone_number || !password || !email_address || !address || !role || !status || !first_login) {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
 
@@ -127,6 +128,7 @@ const createUserDetail = asyncHandler(async (req, res) => {
             address: address,
             role: role,
             status: status,
+            first_login: first_login,
             // permission setting
             agent_menu: 0,
             agent_permission: 0,
@@ -214,9 +216,15 @@ const login = asyncHandler(async (req, res) => {
         return res.status(200).json(new ResultMessage(CODE.REQUIRE, MESSAGE.REQUIRE));
     }
 
-    const userDetail = await UserDetail.findOne({ username: username });
+    const userDetail = await UserDetail.findOne({
+        $or: [
+            { username: username },
+            { email_address: username },
+            { phone_number: username }
+        ]
+    });
     //compare password with hashed password
-    if (userDetail && password == userDetail.password) {
+    if (userDetail && password === userDetail.password) {
         const loginSession = await LoginSession.create(
             {
                 username: username,

@@ -27,6 +27,9 @@ const userDetailSchema = mongoose.Schema({
     status: {
         type: Number,
     },
+    first_login: {
+        type: Number,
+    },
     // user privilege 
     agent_menu: {
         type: Number,
