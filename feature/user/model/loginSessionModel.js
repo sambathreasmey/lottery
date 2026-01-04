@@ -21,6 +21,9 @@ const loginSessionScheme = mongoose.Schema({
     location: {
         type: String,
     },
+    session_status: {
+        type: Number,
+    },
 },
     {
         timestamps: true,
